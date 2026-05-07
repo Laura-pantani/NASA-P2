@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NASA70 — Progetti Studenti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c842;
+      --gold-dim: #c49a1a;
+      --blue-glow: #4fa3e0;
+      --ring-color: rgba(245,200,66,0.18);
+      --text-dim: #555555;
+      --card-bg: rgba(255,255,255,0.95);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #f4f4f4;
+      color: #000;
+      font-family: 'Space Mono', monospace;
+      overflow: hidden;
+    }
+
+    /* ---- STARS ---- */
+    #starfield {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ---- SCENE ---- */
+    #scene {
+      position: fixed; inset: 0; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      perspective: 900px;
+    }
+
+    /* ---- LOGO 3D ---- */
+    #logo-wrap {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+
+    #logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(70px, 10vw, 110px);
+      letter-spacing: 0.05em;
+      line-height: 1;
+      text-align: center;
+      color: #070707;
+      position: relative;
+      user-select: none;
+      transform: rotateX(10deg);
+      transform-style: preserve-3d;
+      
+    }
+
+    #logo span.gold { color: var(--gold); }
+
+    @keyframes logo-float {
+      0%, 100% { transform: rotateX(10deg) translateY(0px); }
+      50%       { transform: rotateX(10deg) translateY(-12px); }
+    }
+
+    #logo-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(10px, 1.2vw, 13px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 10px;
+      opacity: 0;
+      
+    }
+
+    @keyframes fade-in { to { opacity: 1; } }
+
+    /* ---- METEORITE CARDS ---- */
+    .meteorite {
+      position: absolute;
+      width: 0; height: 0;
+      top: 50%; left: 50%;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .meteorite-inner {
+      position: absolute;
+      transform-style: preserve-3d;
+      pointer-events: all;
+      cursor: pointer;
+    }
+
+    .met-card {
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      width: 100px;
+      backdrop-filter: blur(6px);
+      transition: transform 0.25s;
+      pointer-events: all;
+    }
+
+    .met-card:hover {
+      transform: scale(1.1) translateZ(10px);
+    }
+
+    .met-img {
+      width: 100%; height: 55px;
+      object-fit: cover;
+      border-radius: 0;
+      display: block;
+      background: #ddd;
+    }
+
+    .met-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: #000;
+      margin-top: 6px;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.03em;
+      text-shadow: none;
+      transition: color 0.3s ease;
+    }
+
+    .met-author {
+      font-size: 8px;
+      color: #000;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: none;
+      transition: color 0.3s ease;
+    }
+
+    /* ---- MODAL ---- */
+    #modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #modal-overlay.open { display: flex; }
+
+    #modal {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 0;
+      max-width: 520px;
+      width: 90vw;
+      overflow: hidden;
+      animation: modal-in 0.3s cubic-bezier(.22,.68,0,1.2);
+      position: relative;
+    }
+
+    @keyframes modal-in {
+      from { opacity:0; transform: scale(0.88) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    #modal-img {
+      width: 100%; height: 220px;
+      object-fit: cover;
+      display: block;
+      background: #eee;
+    }
+
+    #modal-body {
+      padding: 24px 28px 28px;
+    }
+
+    #modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    #modal-author {
+      font-size: 11px;
+      color: #000;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    #modal-date {
+      font-size: 10px;
+      color: #000;
+      margin-bottom: 14px;
+    }
+
+    #modal-desc {
+      font-size: 12px;
+      line-height: 1.75;
+      color: #000;
+      margin-bottom: 18px;
+    }
+
+    #modal-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 22px;
+    }
+
+    .tag {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      color: #000;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      border-radius: 0;
+      text-transform: uppercase;
+    }
+
+    #modal-actions {
+      display: flex; gap: 12px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 11px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-close {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 11px 18px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .btn-close:hover { color: #000; border-color: #000; }
+
+    /* ---- LOADING ---- */
+    #loader {
+      position: fixed; inset: 0; z-index: 200;
+      background: #f4f4f4;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+      transition: opacity 0.7s;
+    }
+
+    #loader.hidden { opacity: 0; pointer-events: none; }
+
+    .loader-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      font-size: 50px; /* Aumentato per corrispondere alla dimensione precedente dell'immagine */
+      font-weight: 900;
+      color: #000; /* Impostato su nero */
+      letter-spacing: 0.1em;
+    }
+
+    .loader-bar-wrap {
+      width: 200px;
+      height: 2px;
+      background: #ddd;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loader-bar {
+      height: 100%;
+      background: var(--gold);
+      width: 0%;
+      transition: width 1.2s ease;
+      border-radius: 2px;
+    }
+
+    .loader-text {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+    }
+
+    /* ---- HINT ---- */
+    #hint {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      font-size: 10px;
+      color: #445;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: hint-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes hint-pulse {
+      0%,100% { opacity: 0.4; }
+      50%      { opacity: 0.9; }
+    }
+
+    /* ---- FILTERS ---- */
+    #filters-wrap {
+      position: fixed;
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-left: 1px solid rgba(0,0,0,0.1);
+      padding: 10px 0 10px 20px;
+      max-height: 70vh;
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    #filters-wrap::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+    .filter-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      text-align: left;
+      cursor: pointer;
+      letter-spacing: 0.15em;
+      transition: all 0.3s ease;
+      opacity: 0.5;
+    }
+
+    .filter-btn:hover { color: #000; opacity: 1; transform: translateX(5px); }
+    .filter-btn.active { color: var(--gold); opacity: 1; font-weight: 700; }
+
+  </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">NASA70</div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+  <div class="loader-text">Caricamento progetti in orbita…</div>
+</div>
+
+<!-- STARS -->
+<canvas id="starfield"></canvas>
+
+<!-- SCENE -->
+<div id="scene">
+  <!-- LOGO -->
+  <div id="logo-wrap">
+    <div>
+      <div id="logo">NASA70</div>
+      <div id="logo-sub">Progetti studenti — SUPSI IxD</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div id="filters-wrap"></div>
+
+<!-- HINT -->
+<div id="hint">↙ clicca sui progetti per scoprirli ↗</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" role="dialog" aria-modal="true">
+  <div id="modal">
+    <img id="modal-img" src="" alt="">
+    <div id="modal-body">
+      <div id="modal-title"></div>
+      <div id="modal-author"></div>
+      <div id="modal-date"></div>
+      <div id="modal-desc"></div>
+      <div id="modal-tags"></div>
+      <div id="modal-actions">
+        <a id="modal-link" class="btn-primary" href="#" target="_blank" rel="noopener">Visita il progetto ↗</a>
+        <button class="btn-close" id="modal-close">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- STARFIELD ----
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    stars = [];
+    const n = Math.floor((canvas.width * canvas.height) / 2200);
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.005,
+        speed: Math.random() * 0.06 + 0.01
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      s.a = Math.max(0.1, Math.min(1, s.a + s.da));
+      if (Math.random() < 0.005) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,0,0,${s.a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+// ---- DATA + ORBIT ----
+const API_URL = "https://ixd-supsi.github.io/n70api/";
+const IMAGE_URL = API_URL + "immagini/";
+
+const scene = document.getElementById('scene');
+const orbitRoot = document.getElementById('orbit-root');
+const overlay = document.getElementById('modal-overlay');
+const loaderBar = document.getElementById('loader-bar');
+const loader = document.getElementById('loader');
+
+// Animate loader bar
+requestAnimationFrame(() => { loaderBar.style.width = '80%'; });
+
+let paused = false;
+let startTime = null;
+const ORBIT_RADIUS_X = 300;
+const ORBIT_RADIUS_Y = 200;
+const TILT_X = 80;
+const TILT_Z = -120;
+// We'll spread meteorites evenly around the ring
+// Each meteorite has a phase offset and angular speed
+
+let meteorites = []; // {el, inner, angle, speed, data}
+
+function degToRad(d) { return d * Math.PI / 180; }
+
+function buildMeteoriteEl(item, img) {
+  const wrap = document.createElement('div');
+  wrap.className = 'meteorite';
+  wrap.style.position = 'absolute';
+  wrap.style.width = '0';
+  wrap.style.height = '0';
+  wrap.style.top = '50%';
+  wrap.style.left = '50%';
+
+  const inner = document.createElement('div');
+  inner.className = 'meteorite-inner';
+  inner.style.transform = 'translate(-50%, -50%)';
+
+  const card = document.createElement('div');
+  card.className = 'met-card';
+
+  const imgEl = document.createElement('img');
+  imgEl.className = 'met-img';
+  imgEl.src = img;
+  imgEl.alt = item.titolo;
+  imgEl.loading = 'lazy';
+
+  const title = document.createElement('div');
+  title.className = 'met-title';
+  title.textContent = item.titolo;
+
+  const author = document.createElement('div');
+  author.className = 'met-author';
+  author.textContent = item.autore;
+
+  card.appendChild(imgEl);
+  card.appendChild(title);
+  card.appendChild(author);
+  inner.appendChild(card);
+  wrap.appendChild(inner);
+
+  card.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openModal(item);
+  });
+
+  return { wrap, inner, title, author };
+}
+
+function openModal(item) {
+  paused = true;
+  document.getElementById('modal-img').src = IMAGE_URL + item.immagine;
+  document.getElementById('modal-img').alt = item.titolo;
+  document.getElementById('modal-title').textContent = item.titolo;
+  document.getElementById('modal-author').textContent = item.autore;
+  document.getElementById('modal-date').textContent =
+    `${item.data.giorno}. ${item.data.mese}. ${item.data.anno}`;
+  document.getElementById('modal-desc').textContent = item.descrizione || '';
+  const tagsEl = document.getElementById('modal-tags');
+  tagsEl.innerHTML = '';
+  (item.tags || []).forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = t;
+    tagsEl.appendChild(span);
+  });
+  document.getElementById('modal-link').href = item.url;
+  overlay.classList.add('open');
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  paused = false;
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+function animate(ts) {
+  if (!startTime) startTime = ts;
+  if (!paused) {
+    const elapsed = (ts - startTime) * 0.001; // seconds
+    meteorites.forEach(m => {
+      m.angle = m.baseAngle + elapsed * m.speed;
+      const rad = m.angle;
+      const x = Math.cos(rad) * ORBIT_RADIUS_X;
+      const y = Math.sin(rad) * ORBIT_RADIUS_Y;
+
+      // Project from the tilted ring plane to screen
+      const tiltX = degToRad(TILT_X);
+      const tiltZ = degToRad(TILT_Z);
+
+      // 3D coords in ring plane: (x, 0, y)
+      // After rotateX(tiltX): (x, -z*sin + 0*cos, 0*sin + z*cos) = (x, -y*sin(tiltX), y*cos(tiltX))
+      const px = x;
+      const py = -y * Math.sin(tiltX);
+      const pz = y * Math.cos(tiltX);
+
+      // After rotateZ(tiltZ):
+      const fx = px * Math.cos(tiltZ) - py * Math.sin(tiltZ);
+      const fy = px * Math.sin(tiltZ) + py * Math.cos(tiltZ);
+      const fz = pz;
+
+      // Perspective
+      const persp = 900;
+      const scale = persp / (persp + fz);
+      const sx = fx * scale;
+      const sy = fy * scale;
+
+      m.wrap.style.transform =
+        `translate(${sx}px, ${sy}px) scale(${scale})`;
+
+      // Mantieni opacità piena e imposta z-index
+      m.wrap.style.zIndex = Math.round(1000 - fz);
+    });
+  }
+  requestAnimationFrame(animate);
+}
+
+async function init() {
+  try {
+    const data = await fetch(API_URL + "data.json").then(r => r.json());
+    loaderBar.style.width = '100%';
+
+    // Logica Filtri: Metà tag di default + toggle per vederli tutti
+    const uniqueTags = [...new Set(data.flatMap(item => item.tags || []))];
+    const filtersContainer = document.getElementById('filters-wrap');
+    let currentFilter = 'all';
+    let showingAllTags = false;
+    
+    const renderFilters = () => {
+      filtersContainer.innerHTML = '';
+      // Calcola la metà dei tag
+      const tagsToDisplay = showingAllTags ? uniqueTags : uniqueTags.slice(0, Math.ceil(uniqueTags.length / 2));
+      const displayList = ['all', ...tagsToDisplay];
+
+      displayList.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (tag === currentFilter ? ' active' : '');
+        const count = tag === 'all' ? data.length : data.filter(item => item.tags && item.tags.includes(tag)).length;
+        btn.textContent = `${tag} [${count}]`;
+        
+        btn.onclick = () => {
+          currentFilter = tag;
+          const targetTag = tag === 'all' ? null : tag;
+          meteorites.forEach(m => {
+            const isVisible = !targetTag || (m.data.tags && m.data.tags.includes(targetTag));
+            m.wrap.style.display = isVisible ? 'block' : 'none';
+          });
+          renderFilters();
+        };
+        filtersContainer.appendChild(btn);
+      });
+
+      // Pulsante di controllo minimalista
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'filter-btn';
+      toggleBtn.style.marginTop = '15px';
+      toggleBtn.style.paddingTop = '10px';
+      toggleBtn.style.borderTop = '1px solid rgba(0,0,0,0.1)';
+      toggleBtn.style.color = 'var(--gold)';
+      toggleBtn.textContent = showingAllTags ? "« INDIETRO" : "ALTRI +";
+      toggleBtn.onclick = () => {
+        showingAllTags = !showingAllTags;
+        if (!showingAllTags) {
+          // Quando si torna indietro, resettiamo la visualizzazione a tutti i progetti
+          currentFilter = 'all';
+          meteorites.forEach(m => m.wrap.style.display = 'block');
+        }
+        renderFilters();
+      };
+      filtersContainer.appendChild(toggleBtn);
+    };
+
+    renderFilters();
+
+    data.forEach((item, i) => {
+      const baseAngle = (i / data.length) * Math.PI * 2;
+      const speed = 0.08; // Constant slower speed for all cards
+      const { wrap, inner, title, author } = buildMeteoriteEl(item, IMAGE_URL + item.immagine);
+      scene.appendChild(wrap);
+      meteorites.push({ wrap, inner, title, author, baseAngle, angle: baseAngle, speed, data: item });
+    });
+
+    setTimeout(() => {
+      loader.classList.add('hidden');
+      setTimeout(() => { loader.style.display = 'none'; }, 700);
+    }, 600);
+
+    requestAnimationFrame(animate);
+
+  } catch (err) {
+    console.error(err);
+    loader.querySelector('.loader-text').textContent = 'Errore nel caricamento dei dati.';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
