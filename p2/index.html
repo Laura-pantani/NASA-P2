@@ -69,7 +69,6 @@
       font-size: clamp(10px, 1.2vw, 13px);
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--text-dim);
       text-align: center;
       margin-top: 10px;
       opacity: 0;
@@ -95,18 +94,18 @@
     }
 
     .met-card {
-      background: transparent;
+      background: #ffffff33;
       border: none;
-      border-radius: 8px;
-      padding: 8px 10px;
+      border-radius: 0;
+      padding: 4px;
       width: 100px;
-      backdrop-filter: blur(6px);
       transition: transform 0.25s;
       pointer-events: all;
+      text-align: center;
     }
 
     .met-card:hover {
-      transform: scale(1.1) translateZ(10px);
+      transform: scale(1.6) translateZ(50px);
     }
 
     .met-img {
@@ -114,18 +113,14 @@
       object-fit: cover;
       border-radius: 0;
       display: block;
-      background: #ddd;
+      background: #dddddd;
     }
 
     .met-title {
       font-family: 'Space Mono', monospace;
       font-size: 9px;
       color: #000;
-      margin-top: 6px;
       line-height: 1.3;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       letter-spacing: 0.03em;
       text-shadow: none;
       transition: color 0.3s ease;
@@ -135,9 +130,6 @@
       font-size: 8px;
       color: #000;
       margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       text-shadow: none;
       transition: color 0.3s ease;
     }
@@ -193,8 +185,7 @@
     #modal-author {
       font-size: 11px;
       color: #000;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 14px;
     }
 
@@ -224,7 +215,6 @@
       letter-spacing: 0.1em;
       padding: 3px 8px;
       border-radius: 0;
-      text-transform: uppercase;
     }
 
     #modal-actions {
@@ -242,7 +232,6 @@
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.1em;
-      text-transform: uppercase;
       cursor: pointer;
       transition: opacity 0.2s;
       text-decoration: none;
@@ -270,7 +259,7 @@
     /* ---- LOADING ---- */
     #loader {
       position: fixed; inset: 0; z-index: 200;
-      background: #f4f4f4;
+      background: #ffffff;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 20px;
@@ -279,28 +268,30 @@
 
     #loader.hidden { opacity: 0; pointer-events: none; }
 
-    .loader-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 32px;
-      font-size: 50px; /* Aumentato per corrispondere alla dimensione precedente dell'immagine */
-      font-weight: 900;
-      color: #000; /* Impostato su nero */
-      letter-spacing: 0.1em;
+    .loader-video {
+      width: 100px;
+      height: auto;
+      display: block;
+    }
+
+    @keyframes loader-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.7; }
     }
 
     .loader-bar-wrap {
       width: 200px;
       height: 2px;
-      background: #ddd;
+      background: #ffffff;
       border-radius: 2px;
       overflow: hidden;
     }
 
     .loader-bar {
-      height: 100%;
+      height: 50%;
       background: var(--primary);
       width: 0%;
-      transition: width 1.2s ease;
+      transition: width 2s ease;
       border-radius: 2px;
     }
 
@@ -318,8 +309,7 @@
       z-index: 5;
       font-size: 10px;
       color: #445;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      letter-spacing: 0.05em;
       animation: hint-pulse 3s ease-in-out infinite;
     }
 
@@ -351,10 +341,9 @@
       outline: none;
       color: #000;
       width: 160px;
-      letter-spacing: 0.1em;
     }
 
-    #search-input::placeholder { color: #bbb; text-transform: uppercase; }
+    #search-input::placeholder { color: #bbb; }
 
     #filters-wrap {
       display: flex;
@@ -373,8 +362,7 @@
       border: none;
       color: var(--text-dim);
       font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
+      font-size: 11px;
       text-align: left;
       cursor: pointer;
       letter-spacing: 0.15em;
@@ -390,13 +378,26 @@
       text-decoration: underline;
     }
 
+    #top-left-logo {
+      position: fixed;
+      top: 20px;
+      right: 40px;
+      width: 100px;
+      height: auto;
+      z-index: 1200;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
 
+<img src="logo_nasa.png" alt="NASA Logo" id="top-left-logo">
+
 <!-- LOADER -->
 <div id="loader">
-  <div class="loader-logo">NASA70</div>
+  <video class="loader-video" autoplay loop muted playsinline>
+    <source src="logo_nasa_animato.mp4" type="video/mp4">
+  </video>
   <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
   <div class="loader-text">Caricamento progetti in orbita…</div>
 </div>
@@ -406,6 +407,7 @@
 
 <!-- SCENE -->
 <div id="scene">
+  <div id="orbit-root"></div>
   <!-- LOGO -->
   <div id="logo-wrap">
     <div>
@@ -489,8 +491,41 @@
 })();
 
 // ---- DATA + ORBIT ----
-const API_URL = "https://ixd-supsi.github.io/n70api";
-const IMAGE_URL = API_URL + "/immagini/";
+// ---- IMAGE CONFIG ----
+const DATA_URL = "https://ixd-supsi.github.io/n70api/data.json";
+const IMAGE_URL = "https://ixd-supsi.github.io/n70api/immagini/";
+const PLACEHOLDER_IMAGE = "immagini/thumbnail.jpg";
+
+// ---- GET IMAGE FILE ----
+function getImageFile(item) {
+  // prova tutti i possibili campi
+  let file =
+    item.immagine_1 ||
+    item.immagine1 ||
+    item.image ||
+    item.img ||
+    item.thumbnail ||
+    (Array.isArray(item.immagine) ? item.immagine[0] : item.immagine) ||
+    (Array.isArray(item.immagini) ? item.immagini[0] : item.immagini);
+
+  // se non esiste ritorna null
+  if (!file) {
+    console.warn("Nessuna immagine trovata per:", item);
+    return null;
+  }
+
+  // rimuove slash iniziali
+  file = file.replace(/^\/+/, "");
+
+  return file;
+}
+
+function getImageUrl(item) {
+  const file = getImageFile(item);
+  if (!file || file.includes("...")) return PLACEHOLDER_IMAGE;
+  if (/^https?:\/\//i.test(file)) return file;
+  return IMAGE_URL + encodeURIComponent(file);
+}
 
 const scene = document.getElementById('scene');
 const orbitRoot = document.getElementById('orbit-root');
@@ -502,17 +537,111 @@ const loader = document.getElementById('loader');
 requestAnimationFrame(() => { loaderBar.style.width = '80%'; });
 
 let paused = false;
-let startTime = null;
-const ORBIT_RADIUS_X = 300;
-const ORBIT_RADIUS_Y = 200;
-const TILT_X = 80;
-const TILT_Z = -120;
+let startTime = null; // Used for animation timing
+
+// Global variables for current orbit state, will be updated by tag selection
+let currentOrbitRadiusX = 300;
+let currentOrbitRadiusY = 200;
+let currentTiltX = 80;
+let currentTiltZ = -120;
+let currentOrbitSpeedMultiplier = 1; // Multiplier for overall orbit speed
+
+
 // We'll spread meteorites evenly around the ring
 // Each meteorite has a phase offset and angular speed
 
 let meteorites = []; // {el, inner, angle, speed, data}
 
 function degToRad(d) { return d * Math.PI / 180; }
+
+// Define orbit configurations for different tags
+const tagOrbitConfigs = {
+  'all': {
+    orbitRadiusX: 300,
+    orbitRadiusY: 200,
+    tiltX: 80,
+    tiltZ: -120,
+    orbitSpeedMultiplier: 1 // Default speed
+  },
+  'exploration': {
+    orbitRadiusX: 400,
+    orbitRadiusY: 150,
+    tiltX: 70,
+    tiltZ: -100,
+    orbitSpeedMultiplier: 0.8 // Slower
+  },
+  'Mars': {
+    orbitRadiusX: 280,
+    orbitRadiusY: 280, // More circular
+    tiltX: 40,
+    tiltZ: -90,
+    orbitSpeedMultiplier: 1.5 // Faster
+  },
+  'sounds': {
+    orbitRadiusX: 200,
+    orbitRadiusY: 100,
+    tiltX: 10,
+    tiltZ: -170,
+    orbitSpeedMultiplier: 2.0 // Very fast, almost flat
+  },
+  'visualization': {
+    orbitRadiusX: 350,
+    orbitRadiusY: 250,
+    tiltX: 60,
+    tiltZ: -130,
+    orbitSpeedMultiplier: 1.2 // Slightly faster
+  },
+  'moon': {
+    orbitRadiusX: 250,
+    orbitRadiusY: 180,
+    tiltX: 90, // More vertical
+    tiltZ: -160,
+    orbitSpeedMultiplier: 0.7 // Slower
+  },
+  'climate change': {
+    orbitRadiusX: 500,
+    orbitRadiusY: 220,
+    tiltX: 50,
+    tiltZ: -110,
+    orbitSpeedMultiplier: 1.1
+  },
+  'satellites': {
+    orbitRadiusX: 380,
+    orbitRadiusY: -90,
+    tiltX: 75,
+    tiltZ: -140,
+    orbitSpeedMultiplier: 0.9
+  },
+  'game': {
+    orbitRadiusX: 270,
+    orbitRadiusY: 230,
+    tiltX: 80,
+    tiltZ: -80,
+    orbitSpeedMultiplier: 1.8
+  },
+  'educational': {
+    orbitRadiusX: 310,
+    orbitRadiusY: 210,
+    tiltX: 85,
+    tiltZ: -125,
+    orbitSpeedMultiplier: 1.0
+  },
+  'solar system': {
+    orbitRadiusX: 450,
+    orbitRadiusY: 100, // Very elliptical
+    tiltX: 20,
+    tiltZ: -10,
+    orbitSpeedMultiplier: 0.6
+  }
+  // Add more as needed, or a default fallback for unconfigured tags
+};
+
+// Helper per formattare il testo: Prima maiuscola, resto minuscolo (esclude NASA70)
+function formatText(str) {
+  if (!str) return "";
+  if (str.toUpperCase() === "NASA70") return "NASA70";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 function buildMeteoriteEl(item, img) {
   const wrap = document.createElement('div');
@@ -531,18 +660,30 @@ function buildMeteoriteEl(item, img) {
   card.className = 'met-card';
 
   const imgEl = document.createElement('img');
-  imgEl.className = 'met-img';
+imgEl.className = 'met-img';
+imgEl.alt = item.titolo;
+imgEl.loading = 'lazy';
+
+// se esiste immagine usa quella
+if (img) {
   imgEl.src = img;
-  imgEl.alt = item.titolo;
-  imgEl.loading = 'lazy';
+} else {
+  imgEl.src = PLACEHOLDER_IMAGE;
+}
+
+// fallback se immagine non caricata
+imgEl.onerror = () => {
+  console.error("Immagine non trovata:", imgEl.src);
+  imgEl.src = PLACEHOLDER_IMAGE;
+};
 
   const title = document.createElement('div');
   title.className = 'met-title';
-  title.textContent = item.titolo;
+  title.textContent = formatText(item.titolo);
 
   const author = document.createElement('div');
   author.className = 'met-author';
-  author.textContent = item.autore;
+  author.textContent = formatText(item.autore);
 
   card.appendChild(imgEl);
   card.appendChild(title);
@@ -560,12 +701,12 @@ function buildMeteoriteEl(item, img) {
 
 function openModal(item) {
   paused = true;
-  // Seleziona l'immagine 1: prova immagine1, altrimenti il primo elemento di un array o la stringa immagine
-  const imgFile = item.immagine1 || (Array.isArray(item.immagine) ? item.immagine[0] : item.immagine);
-  document.getElementById('modal-img').src = IMAGE_URL + imgFile;
+  const imagePath = getImageUrl(item);
+  
+  document.getElementById('modal-img').src = imagePath;
   document.getElementById('modal-img').alt = item.titolo;
-  document.getElementById('modal-title').textContent = item.titolo;
-  document.getElementById('modal-author').textContent = item.autore;
+  document.getElementById('modal-title').textContent = formatText(item.titolo);
+  document.getElementById('modal-author').textContent = formatText(item.autore);
   document.getElementById('modal-date').textContent =
     `${item.data.giorno}. ${item.data.mese}. ${item.data.anno}`;
   document.getElementById('modal-desc').textContent = item.descrizione || '';
@@ -574,7 +715,7 @@ function openModal(item) {
   (item.tags || []).forEach(t => {
     const span = document.createElement('span');
     span.className = 'tag';
-    span.textContent = t;
+    span.textContent = formatText(t);
     tagsEl.appendChild(span);
   });
   document.getElementById('modal-link').href = item.url;
@@ -593,28 +734,28 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal
 function animate(ts) {
   if (!startTime) startTime = ts;
   if (!paused) {
-    const elapsed = (ts - startTime) * 0.001; // seconds
+    const elapsed = (ts - startTime) * 0.001 * currentOrbitSpeedMultiplier; // Apply global speed multiplier
     meteorites.forEach(m => {
       m.angle = m.baseAngle + elapsed * m.speed;
       const rad = m.angle;
-      const x = Math.cos(rad) * ORBIT_RADIUS_X;
-      const y = Math.sin(rad) * ORBIT_RADIUS_Y;
+      const x = Math.cos(rad) * currentOrbitRadiusX; // Use current radius
+      const y = Math.sin(rad) * currentOrbitRadiusY; // Use current radius
 
       // Project from the tilted ring plane to screen
-      const tiltX = degToRad(TILT_X);
-      const tiltZ = degToRad(TILT_Z);
+      const tiltX = degToRad(currentTiltX); // Use current tilt
+      const tiltZ = degToRad(currentTiltZ); // Use current tilt
 
       // 3D coords in ring plane: (x, 0, y)
       // After rotateX(tiltX): (x, -z*sin + 0*cos, 0*sin + z*cos) = (x, -y*sin(tiltX), y*cos(tiltX))
       const px = x;
       const py = -y * Math.sin(tiltX);
       const pz = y * Math.cos(tiltX);
-
+      
       // After rotateZ(tiltZ):
       const fx = px * Math.cos(tiltZ) - py * Math.sin(tiltZ);
       const fy = px * Math.sin(tiltZ) + py * Math.cos(tiltZ);
       const fz = pz;
-
+      
       // Perspective
       const persp = 900;
       const scale = persp / (persp + fz);
@@ -652,7 +793,25 @@ function scrambleText(element, finalText) {
 
 async function init() {
   try {
-    const data = await fetch(API_URL + "/data.json").then(r => r.json());
+    // Velocizza la riproduzione del video del loader
+    const loaderVideo = document.querySelector('.loader-video');
+    if (loaderVideo) {
+      loaderVideo.playbackRate = 3;
+    }
+    
+    // Initialize orbit parameters with 'all' config
+    const initialConfig = tagOrbitConfigs['all'];
+    currentOrbitRadiusX = initialConfig.orbitRadiusX;
+    currentOrbitRadiusY = initialConfig.orbitRadiusY;
+    currentTiltX = initialConfig.tiltX;
+    currentTiltZ = initialConfig.tiltZ;
+    currentOrbitSpeedMultiplier = initialConfig.orbitSpeedMultiplier;
+
+    const rawData = await fetch(DATA_URL).then(r => {
+      if (!r.ok) throw new Error(`Errore API: ${r.status}`);
+      return r.json();
+    });
+    const data = [...rawData, ...rawData]; // Duplica i progetti per popolare maggiormente l'orbita
     loaderBar.style.width = '100%';
 
     // Funzione per pulire i tag e unificare i duplicati (2D, 3D, 3D program)
@@ -683,20 +842,31 @@ async function init() {
           ? data.length 
           : data.filter(item => (item.tags || []).map(cleanTag).includes(tag)).length;
 
-        // Mostra solo i tag che hanno più di un progetto associato (eccetto per 'all')
-        if (tag !== 'all' && count <= 1) return;
+        // Mostra nell'indice solo i tag che hanno più di 3 progetti associati (eccetto per 'all')
+        if (tag !== 'all' && count <= 3) return;
 
         const btn = document.createElement('button');
         btn.className = 'filter-btn' + (tag === currentFilter ? ' active' : '');
         
-        btn.textContent = tag === 'all' ? `NASA70 [${count}]` : `• ${tag} [${count}]`;
+        const tagLabel = tag === 'all' ? 'NASA70' : formatText(tag);
+        btn.textContent = tag === 'all' ? `${tagLabel} [${count}]` : `• ${tagLabel} [${count}]`;
         
         btn.onclick = () => {
           currentFilter = tag;
           const targetTag = tag === 'all' ? null : tag;
+
+          // Get the orbit config for the current tag, fallback to 'all' if not defined
+          const config = tagOrbitConfigs[tag] || tagOrbitConfigs['all'];
+
+          // Update global orbit parameters
+          currentOrbitRadiusX = config.orbitRadiusX;
+          currentOrbitRadiusY = config.orbitRadiusY;
+          currentTiltX = config.tiltX;
+          currentTiltZ = config.tiltZ;
+          currentOrbitSpeedMultiplier = config.orbitSpeedMultiplier;
           
           // Effetto Matrix sul Logo
-          const newTitle = tag === 'all' ? 'NASA70' : tag.toUpperCase();
+          const newTitle = tag === 'all' ? 'NASA70' : formatText(tag);
           scrambleText(document.getElementById('logo'), newTitle);
 
           meteorites.forEach(m => {
@@ -719,9 +889,7 @@ async function init() {
     data.forEach((item, i) => {
       const baseAngle = (i / data.length) * Math.PI * 2;
       const speed = 0.08; // Constant slower speed for all cards
-      // Seleziona l'immagine 1 per la card in orbita
-      const imgFile = item.immagine1 || (Array.isArray(item.immagine) ? item.immagine[0] : item.immagine);
-      const { wrap, inner, title, author } = buildMeteoriteEl(item, IMAGE_URL + imgFile);
+      const { wrap, inner, title, author } = buildMeteoriteEl(item, getImageUrl(item));
       scene.appendChild(wrap);
       meteorites.push({ wrap, inner, title, author, baseAngle, angle: baseAngle, speed, data: item });
     });

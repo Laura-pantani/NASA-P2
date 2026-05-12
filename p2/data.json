@@ -153,7 +153,100 @@
 			"satelliti",
 			"immagini",
 			"spazio"
-			
 		]
+	},
+	{
+		"titolo" : "Cosmic Garden",
+		"descrizione" : "Un esperimento botanico nello spazio profondo, dove la gravità zero modella la crescita di specie aliene in un ambiente controllato.",
+		"immagine" : "thumbnail.jpg",
+		"url" : "#",
+		"data" : {
+			"giorno" : 12,
+			"mese" : 10,
+			"anno" : 2027
+		},
+		"autore" : "Elena Rossi",
+		"tags" : [
+			"botany",
+			"space",
+			"experiment"
+		]
+	},
+	{
+		"titolo" : "Mars Colony UI",
+		"descrizione" : "Progettazione dell'interfaccia utente per il primo insediamento umano su Marte, focalizzata sulla gestione delle risorse vitali e del supporto vitale.",
+		"immagine" : "nasasay.jpg",
+		"url" : "#",
+		"data" : {
+			"giorno" : 5,
+			"mese" : 2,
+			"anno" : 2028
+		},
+		"autore" : "Marco Bianchi",
+		"tags" : [
+			"UI",
+			"Mars",
+			"colonization"
+		]
+	},
+	{
+		"titolo" : "Voyager's Echo",
+		"descrizione" : "Un'installazione sonora che trasforma i segnali radio captati dalle sonde Voyager ai confini del sistema solare in composizioni ambientali.",
+		"immagine" : "otherworlds.jpg",
+		"url" : "#",
+		"data" : {
+			"giorno" : 30,
+			"mese" : 6,
+			"anno" : 2026
+		},
+		"autore" : "Sofia Verdi",
+		"tags" : [
+			"sounds",
+			"art",
+			"Voyager"
+		]
+	},
+	{
+		"titolo" : "Deep Space Telescope",
+		"descrizione" : "Visualizzazione immersiva dei dati raccolti dal nuovo telescopio orbitante progettato per lo studio della materia oscura e l'origine delle galassie.",
+		"immagine" : "moonprint.jpg",
+		"url" : "#",
+		"data" : {
+			"giorno" : 15,
+			"mese" : 12,
+			"anno" : 2026
+		},
+		"autore" : "Luca Neri",
+		"tags" : [
+			"telescope",
+			"dark matter",
+			"visualization"
+		]
+	},
+	{
+		"titolo" : "Galactic Map",
+		"descrizione" : "Una mappa interattiva delle costellazioni visibili dall'emisfero boreale, con approfondimenti storici e scientifici.",
+		"immagine" : "otherworlds.jpg",
+		"url" : "#",
+		"data" : {
+			"giorno" : 10,
+			"mese" : 1,
+			"anno" : 2027
+		},
+		"autore" : "Alessia Romano",
+		"tags" : ["exploration", "stars", "visualization"]
+	},
+	{
+		"titolo" : "Red Planet Rover",
+		"descrizione" : "Controlla virtualmente un rover su Marte e raccogli campioni di roccia per analizzare la composizione del suolo.",
+		"immagine" : "carla.jpg",
+		"url" : "#",
+		"data" : {
+			"giorno" : 18,
+			"mese" : 3,
+			"anno" : 2027
+		},
+		"autore" : "Davide Esposito",
+		"tags" : ["Mars", "robots", "exploration"]
 	}
 ]
