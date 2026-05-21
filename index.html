@@ -514,9 +514,11 @@
       bottom: 28px; left: 50%;
       transform: translateX(-50%);
       z-index: 5;
-      font-size: 13px;
-      color: #445;
-      letter-spacing: 0.05em;
+      font-size: 12px;
+      font-weight: 100;
+      line-height: 1.35;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
       animation: hint-pulse 3s ease-in-out infinite;
     }
 
@@ -569,10 +571,12 @@
       border: none;
       color: var(--text-dim);
       font-family: var(--font-main);
-      font-size: 11px;
+      font-size: 12px;
+      font-weight: 100;
+      line-height: 1.35;
       text-align: left;
       cursor: none;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.03em;
       transition: all 0.3s ease;
       opacity: 0.5;
     }
@@ -587,10 +591,10 @@
 
     #about {
       position: fixed;
-      top: 112px;
-      right: 28px;
+      top: 70px;
+      left: 28px;
       z-index: 1100;
-      width: min(260px, calc(100vw - 56px));
+      width: min(350px, calc(150vw - 56px));
       color: var(--text-dim);
       font-family: var(--font-main);
       text-align: left;
@@ -600,7 +604,7 @@
     #about-title {
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.03em;
       margin-bottom: 8px;
     }
 
