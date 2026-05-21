@@ -1,5 +1,10 @@
-# NASA-P2
+# NASA-Progetto 2
 Pagina di lancio dei progetti fatti in classe.
+
+# NASA70
+Autore: Laura Pantani \
+[NASA70](https://laura-pantani.github.io/NASA-P2/)
+
 
 ## Intenzioni progetto
 la mia intenzione per questo progetto e di creare un archivio nello spazio dove i progetti orbitano attorno al Logo di NASA70. 
