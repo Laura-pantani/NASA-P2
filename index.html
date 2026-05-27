@@ -1409,7 +1409,8 @@ async function init() {
     });
     modalProjects = rawData;
     activeModalProjects = rawData;
-    const data = [...rawData, ...rawData]; // Duplica i progetti per popolare maggiormente l'orbita
+    // Moltiplica i progetti fino a raggiungere 100 elementi in orbita
+    const data = Array.from({ length: 100 }, (_, i) => rawData[i % rawData.length]);
     loaderBar.style.width = '100%';
 
     // Funzione per pulire i tag e unificare i duplicati (2D, 3D, 3D program)
@@ -1493,10 +1494,16 @@ async function init() {
           } else {
             scrambleText(document.getElementById('logo'), formatText(tag));
           }
-          
-          meteorites.forEach(m => {
+
+          // Filtra i meteoriti visibili e ricalcola le posizioni per renderli equi-distanti nell'orbita
+          const visibleMeteorites = meteorites.filter(m => {
             const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
             m.wrap.style.display = isVisible ? 'block' : 'none';
+            return isVisible;
+          });
+
+          visibleMeteorites.forEach((m, idx) => {
+            m.baseAngle = (idx / visibleMeteorites.length) * Math.PI * 2;
           });
           renderFilters();
         };
