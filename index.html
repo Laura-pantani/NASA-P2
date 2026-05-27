@@ -251,12 +251,12 @@
 
     #modal {
       background: var(--card-bg);
-      border: 1px solid rgba(0, 0, 0, 0.15);
+      border: none;
       border-radius: 0;
       max-width: 520px;
       width: 100%;
       overflow: hidden;
-      animation: modal-in 0.3s cubic-bezier(.22,.68,0,1.2);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.1);
       position: relative;
       flex: 0 0 auto;
       z-index: 2;
@@ -367,10 +367,11 @@
     }
 
     #modal-img {
-      width: 100%; height: 220px;
+      width: 100%; 
+      height: 280px;
       object-fit: cover;
       display: block;
-      background: #eee;
+      background: #000;
     }
 
     #modal-body {
@@ -379,48 +380,51 @@
 
     #modal-title {
       font-family: var(--font-main);
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 24px;
+      font-weight: 600;
       color: #000;
-      margin-bottom: 10px;
-      line-height: 1.3;
+      margin-bottom: 8px;
+      line-height: 2;
       text-align: left;
     }
 
     #modal-author {
       font-family: var(--font-main);
       font-weight: 100;
-      font-size: 15px;
-      color: #000;
-      letter-spacing: 0.05em;
-      margin-bottom: 14px;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 24px;
     }
 
     #modal-date {
-      font-size: 10px;
-      color: #000;
-      margin-bottom: 14px;
+      font-size: 9px;
+      color: #ccc;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+      display: block;
     }
 
     #modal-desc {
-      font-size: 14px;
-      line-height: 16.5px;
-      color: #000;
-      margin-bottom: 18px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 32px;
+      font-weight: 300;
     }
 
     #modal-tags {
       display: flex; flex-wrap: wrap; gap: 6px;
-      margin-bottom: 22px;
+      margin-bottom: 40px;
     }
 
     .tag {
-      background: rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      color: #000;
-      font-size: 9px;
+      background: transparent;
+      border: 1px solid #eee;
+      color: #999;
+      font-size: 8px;
       letter-spacing: 0.1em;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 0;
     }
 
@@ -433,29 +437,30 @@
       background: var(--primary);
       color: #fff;
       border: none;
-      border-radius: 6px;
-      padding: 11px 0;
+      border-radius: 0;
+      padding: 16px 0;
       font-family: var(--font-main);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: background 0.3s;
       text-decoration: none;
       text-align: center;
       display: block;
     }
 
-    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:hover { background: #333; }
 
     .btn-close {
       background: transparent;
-      color: var(--text-dim);
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 11px 18px;
+      color: #000;
+      border: 1px solid #000;
+      border-radius: 0;
+      padding: 16px 24px;
       font-family: var(--font-main);
-      font-size: 11px;
+      font-size: 10px;
       cursor: pointer;
       letter-spacing: 0.08em;
       transition: color 0.2s, border-color 0.2s;
@@ -531,35 +536,20 @@
     #filters-container {
       position: fixed;
       left: 40px;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 230px;
       z-index: 1100;
       display: flex;
       flex-direction: column;
       gap: 20px;
-      max-height: 80vh;
+      max-height: calc(100vh - 280px);
     }
-
-    #search-input {
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(0,0,0,0.3);
-      font-family: var(--font-main);
-      font-size: 11px;
-      padding: 8px 0;
-      outline: none;
-      color: #000;
-      width: 160px;
-    }
-
-    #search-input::placeholder { color: #888; }
 
     #filters-wrap {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      border-left: 1px solid rgba(0,0,0,0.3);
-      padding: 0 0 0 20px;
+      gap: 14px;
+      border-left: none;
+      padding: 0;
       overflow-y: auto;
       scrollbar-width: none; /* Firefox */
     }
@@ -571,7 +561,7 @@
       border: none;
       color: #000000;
       font-family: var(--font-main);
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 100;
       line-height: 1.35;
       text-align: left;
@@ -655,7 +645,6 @@
 
 <!-- FILTERS -->
 <div id="filters-container">
-  <input type="text" id="search-input" placeholder="Cerca tag..." autocomplete="off">
   <div id="filters-wrap"></div>
 </div>
 
@@ -831,6 +820,15 @@ let currentOrbitSpeedMultiplier = 1; // Multiplier for overall orbit speed
 let currentWaveAmp = 0;
 let currentWaveFreq = 0;
 let modalProjects = [];
+
+let targetOrbitRadiusX = 300;
+let targetOrbitRadiusY = 200;
+let targetTiltX = 80;
+let targetTiltZ = -120;
+let targetOrbitSpeedMultiplier = 1;
+let targetWaveAmp = 0;
+let targetWaveFreq = 0;
+
 let activeModalProjects = [];
 let currentModalItem = null;
 
@@ -1312,12 +1310,27 @@ function animate(ts) {
   lastFrameTime = ts;
 
   if (!paused) {
+    const orbitLerp = 0.05;
+    currentOrbitRadiusX += (targetOrbitRadiusX - currentOrbitRadiusX) * orbitLerp;
+    currentOrbitRadiusY += (targetOrbitRadiusY - currentOrbitRadiusY) * orbitLerp;
+    currentTiltX += (targetTiltX - currentTiltX) * orbitLerp;
+    currentTiltZ += (targetTiltZ - currentTiltZ) * orbitLerp;
+    currentOrbitSpeedMultiplier += (targetOrbitSpeedMultiplier - currentOrbitSpeedMultiplier) * orbitLerp;
+    currentWaveAmp += (targetWaveAmp - currentWaveAmp) * orbitLerp;
+    currentWaveFreq += (targetWaveFreq - currentWaveFreq) * orbitLerp;
+
     if (!manualControl) {
       autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier;
       orbitProgress = autoOrbitProgress;
     }
 
     meteorites.forEach(m => {
+      const baseLerp = 0.05;
+      let diff = m.targetBaseAngle - m.baseAngle;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      m.baseAngle += diff * baseLerp;
+
       m.angle = m.baseAngle + orbitProgress * m.speed;
       const rad = m.angle;
       const wave = Math.sin(rad * currentWaveFreq) * currentWaveAmp;
@@ -1395,13 +1408,13 @@ async function init() {
     
     // Initialize orbit parameters with 'all' config
     const initialConfig = getOrbitConfig('all');
-    currentOrbitRadiusX = initialConfig.orbitRadiusX;
-    currentOrbitRadiusY = initialConfig.orbitRadiusY;
-    currentTiltX = initialConfig.tiltX;
-    currentTiltZ = initialConfig.tiltZ;
-    currentOrbitSpeedMultiplier = initialConfig.orbitSpeedMultiplier;
-    currentWaveAmp = initialConfig.waveAmp || 0;
-    currentWaveFreq = initialConfig.waveFreq || 0;
+    targetOrbitRadiusX = currentOrbitRadiusX = initialConfig.orbitRadiusX;
+    targetOrbitRadiusY = currentOrbitRadiusY = initialConfig.orbitRadiusY;
+    targetTiltX = currentTiltX = initialConfig.tiltX;
+    targetTiltZ = currentTiltZ = initialConfig.tiltZ;
+    targetOrbitSpeedMultiplier = currentOrbitSpeedMultiplier = initialConfig.orbitSpeedMultiplier;
+    targetWaveAmp = currentWaveAmp = initialConfig.waveAmp || 0;
+    targetWaveFreq = currentWaveFreq = initialConfig.waveFreq || 0;
 
     const rawData = await fetch(DATA_URL).then(r => {
       if (!r.ok) throw new Error(`Errore API: ${r.status}`);
@@ -1428,13 +1441,11 @@ async function init() {
       .sort((a, b) => a.localeCompare(b));
 
     const filtersContainer = document.getElementById('filters-wrap');
-    const searchInput = document.getElementById('search-input');
-    let searchTerm = '';
     let currentFilter = 'all';
+    let showAllTags = false;
     
     const renderFilters = () => {
       filtersContainer.innerHTML = '';
-      const searchTermLower = searchTerm.toLowerCase();
 
       // Calcola i conteggi per tutti i tag unici
       const tagCounts = {};
@@ -1443,20 +1454,18 @@ async function init() {
         tagCounts[tag] = rawData.filter(item => itemTagKeys(item).includes(tagKey)).length;
       });
 
-      // Filtra i tag in base al termine di ricerca e al conteggio minimo
-      const filteredAndCountedTags = uniqueTags.filter(t => {
-        const matchesSearch = t.toLowerCase().includes(searchTermLower);
-        const hasSearch = searchTermLower.length > 0;
-        return matchesSearch && (hasSearch || tagCounts[t] >= 2);
-      });
+      // Filtra i tag: se non showAllTags, mostra solo quelli con almeno 2 occorrenze
+      let filteredTags = showAllTags 
+        ? uniqueTags 
+        : uniqueTags.filter(t => tagCounts[t] >= 2);
 
-      // Ordina i tag dal più usato al meno usato
-      filteredAndCountedTags.sort((a, b) => {
+      // Ordina i tag
+      filteredTags.sort((a, b) => {
         const countDiff = tagCounts[b] - tagCounts[a];
         return countDiff !== 0 ? countDiff : a.localeCompare(b);
       });
 
-      const displayList = ['all', ...filteredAndCountedTags];
+      const displayList = ['all', ...filteredTags];
 
       displayList.forEach(tag => {
         // Contatore progetti per tag (usando la logica di pulizia)
@@ -1467,7 +1476,7 @@ async function init() {
         btn.className = 'filter-btn' + (tag === currentFilter ? ' active' : '');
         
         const tagLabel = tag === 'all' ? 'NASA70' : formatText(tag);
-        btn.textContent = tag === 'all' ? `${tagLabel} [${count}]` : `• ${tagLabel} [${count}]`;
+        btn.textContent = tag === 'all' ? `${tagLabel} [${count}]` : `${tagLabel} [${count}]`;
         
         btn.onclick = (e) => {
           e.stopPropagation();
@@ -1481,13 +1490,13 @@ async function init() {
           const config = getOrbitConfig(tag);
 
           // Update global orbit parameters
-          currentOrbitRadiusX = config.orbitRadiusX;
-          currentOrbitRadiusY = config.orbitRadiusY;
-          currentTiltX = config.tiltX;
-          currentTiltZ = config.tiltZ;
-          currentOrbitSpeedMultiplier = config.orbitSpeedMultiplier;
-          currentWaveAmp = config.waveAmp || 0;
-          currentWaveFreq = config.waveFreq || 0;
+          targetOrbitRadiusX = config.orbitRadiusX;
+          targetOrbitRadiusY = config.orbitRadiusY;
+          targetTiltX = config.tiltX;
+          targetTiltZ = config.tiltZ;
+          targetOrbitSpeedMultiplier = config.orbitSpeedMultiplier;
+          targetWaveAmp = config.waveAmp || 0;
+          targetWaveFreq = config.waveFreq || 0;
 
           if (tag === 'all') {
             showCenterLogo();
@@ -1503,17 +1512,25 @@ async function init() {
           });
 
           visibleMeteorites.forEach((m, idx) => {
-            m.baseAngle = (idx / visibleMeteorites.length) * Math.PI * 2;
+            m.targetBaseAngle = (idx / visibleMeteorites.length) * Math.PI * 2;
           });
           renderFilters();
         };
         filtersContainer.appendChild(btn);
       });
-    };
 
-    searchInput.oninput = (e) => {
-      searchTerm = e.target.value;
-      renderFilters();
+      // Aggiunge il tasto per espandere/comprimere l'elenco
+      const moreBtn = document.createElement('button');
+      moreBtn.className = 'filter-btn';
+      moreBtn.style.marginTop = '10px';
+      moreBtn.style.opacity = '0.4';
+      moreBtn.textContent = showAllTags ? '... Mostra meno' : '... Altri tag';
+      moreBtn.onclick = (e) => {
+        e.stopPropagation();
+        showAllTags = !showAllTags;
+        renderFilters();
+      };
+      filtersContainer.appendChild(moreBtn);
     };
 
     renderFilters();
@@ -1523,7 +1540,7 @@ async function init() {
       const speed = 0.08; // Constant slower speed for all cards
       const { wrap, inner, title, author } = buildMeteoriteEl(item, getImageUrl(item));
       scene.appendChild(wrap);
-      meteorites.push({ wrap, inner, title, author, baseAngle, angle: baseAngle, speed, data: item });
+      meteorites.push({ wrap, inner, title, author, baseAngle, targetBaseAngle: baseAngle, angle: baseAngle, speed, data: item });
     });
 
     setTimeout(() => {
