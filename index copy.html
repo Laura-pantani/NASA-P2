@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NASA70 — Progetti Studenti</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #000000;
+      --primary-dim: #333333;
+      --ring-color: rgba(0,0,0,0.05);
+      --text-dim: #555555;
+      --card-bg: rgba(255,255,255,0.95);
+      --font-main: 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue LT Std', 'Helvetica Neue Std', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #f4f4f4;
+      color: #000;
+      font-family: var(--font-main);
+      overflow: hidden;
+      cursor: none;
+    }
+
+    a, button, input, .meteorite-inner {
+      cursor: none;
+    }
+
+    #custom-cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 25px;
+      height: 30px;
+      border: 7px solid rgba(0, 0, 0, 0.75);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      z-index: 3000;
+      mix-blend-mode: difference;
+    }
+
+    #custom-cursor::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #custom-cursor.is-hovering {
+      width: 42px;
+      height: 42px;
+      border-color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    @media (pointer: coarse) {
+      html, body,
+      a, button, input, .meteorite-inner {
+        cursor: auto;
+      }
+
+      #custom-cursor {
+        display: none;
+      }
+    }
+
+    /* ---- STARS ---- */
+    #starfield {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ---- SCENE ---- */
+    #scene {
+      position: fixed; inset: 0; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      perspective: 900px;
+    }
+
+    #orbit-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #top-left-logo {
+      position: fixed;
+      top: 22px;
+      right: 28px;
+      width: 180px;
+      height: auto;
+      z-index: 1200;
+      pointer-events: none;
+    }
+
+    @keyframes fade-in { to { opacity: 1; } }
+
+    /* ---- METEORITE CARDS ---- */
+    .meteorite {
+      position: absolute;
+      width: 0; height: 0;
+      top: 50%; left: 50%;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .meteorite-inner {
+      position: absolute;
+      transform-style: preserve-3d;
+      pointer-events: all;
+      cursor: pointer;
+    }
+
+    .meteorite:hover {
+      z-index: 2000 !important;
+    }
+
+    .met-card {
+      background: #ffffff33;
+      border: none;
+      border-radius: 0;
+      padding: 4px;
+      width: 100px;
+      transition: transform 0.25s;
+      pointer-events: all;
+      text-align: center;
+    }
+
+    .met-card:hover {
+      transform: scale(1.6) translateZ(50px);
+    }
+
+    .met-img {
+      width: 100%; height: 55px;
+      object-fit: cover;
+      border-radius: 0;
+      display: block;
+      background: #dddddd;
+    }
+
+    .met-title {
+      font-family: var(--font-main);
+      font-weight: 700;
+      margin-top: 4px;
+      font-size: 9px;
+      color: #000;
+      line-height: 1.3;
+      text-align: left;
+      letter-spacing: 0.03em;
+      text-shadow: none;
+      transition: color 0.3s ease;
+    }
+
+    .met-author {
+      font-family: var(--font-main);
+      font-weight: 100;
+      font-size: 8px;
+      color: #000;
+      margin-top: 2px;
+      text-align: left;
+      text-shadow: none;
+      transition: color 0.3s ease;
+    }
+
+    /* ---- MODAL ---- */
+    #modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    #modal-overlay.open { display: flex; }
+
+    #modal-gallery {
+      width: min(1180px, 96vw);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px) minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+      scrollbar-width: none;
+    }
+
+    #modal-gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    #modal {
+      background: var(--card-bg);
+      border: none;
+      border-radius: 0;
+      max-width: 520px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+      position: relative;
+      flex: 0 0 auto;
+      z-index: 2;
+    }
+
+    .modal-related {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 6px 2px 12px;
+      scrollbar-width: none;
+      min-width: 0;
+    }
+
+    .modal-related::-webkit-scrollbar {
+      display: none;
+    }
+
+    #modal-related-left {
+      justify-content: flex-end;
+    }
+
+    .related-card {
+      flex: 0 0 110px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 0;
+      padding: 4px;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.2s, border-color 0.2s, opacity 0.2s;
+    }
+
+    .related-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0,0,0,0.35);
+    }
+
+    .related-card.active {
+      border-color: #000;
+      opacity: 0.55;
+    }
+
+    .related-img {
+      width: 100%;
+      height: 62px;
+      object-fit: cover;
+      display: block;
+      background: #eee;
+    }
+
+    .related-title {
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 9px;
+      line-height: 1.25;
+      color: #000;
+      margin-top: 5px;
+      text-align: left;
+    }
+
+    .related-author {
+      font-family: var(--font-main);
+      font-weight: 100;
+      font-size: 8px;
+      line-height: 1.25;
+      color: #000;
+      margin-top: 2px;
+      text-align: left;
+    }
+
+    @keyframes modal-in {
+      from { opacity:0; transform: scale(0.88) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    @media (max-width: 820px) {
+      #modal-overlay {
+        padding: 18px;
+      }
+
+      #modal-gallery {
+        grid-template-columns: 1fr;
+        max-height: 94vh;
+        overflow-y: auto;
+      }
+
+      #modal {
+        width: 90vw;
+      }
+
+      .modal-related {
+        width: 90vw;
+      }
+
+      #modal-related-left {
+        order: 2;
+        justify-content: flex-start;
+      }
+
+      #modal {
+        order: 1;
+      }
+
+      #modal-related-right {
+        order: 3;
+      }
+    }
+
+    #modal-img {
+      width: 100%; 
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+
+    #modal-body {
+      padding: 24px 28px 28px;
+    }
+
+    #modal-title {
+      font-family: var(--font-main);
+      font-size: 24px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 8px;
+      line-height: 2;
+      text-align: left;
+    }
+
+    #modal-author {
+      font-family: var(--font-main);
+      font-weight: 100;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    #modal-date {
+      font-size: 9px;
+      color: #ccc;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    #modal-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    #modal-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 40px;
+    }
+
+    .tag {
+      background: transparent;
+      border: 1px solid #eee;
+      color: #999;
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 0;
+    }
+
+    #modal-actions {
+      display: flex; gap: 12px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      padding: 16px 0;
+      font-family: var(--font-main);
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+
+    .btn-primary:hover { background: #333; }
+
+    .btn-close {
+      background: transparent;
+      color: #000;
+      border: 1px solid #000;
+      border-radius: 0;
+      padding: 16px 24px;
+      font-family: var(--font-main);
+      font-size: 10px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .btn-close:hover { color: #000; border-color: #000; }
+
+    /* ---- LOADING ---- */
+    #loader {
+      position: fixed; inset: 0; z-index: 200;
+      background: #ffffff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+      transition: opacity 0.2s;
+    }
+
+    #loader.hidden { opacity: 0; pointer-events: none; }
+
+    .loader-video {
+      width: 300px;
+      height: auto;
+      display: block;
+    }
+
+    @keyframes loader-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.7; }
+    }
+
+    .loader-bar-wrap {
+      width: 200px;
+      height: 2px;
+      background: #ffffff;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loader-bar {
+      height: 50%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 2s ease;
+      border-radius: 2px;
+    }
+
+    .loader-text {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+    }
+
+    /* ---- HINT ---- */
+    #hint {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      font-size: 12px;
+      font-weight: 100;
+      line-height: 1.35;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+      animation: hint-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes hint-pulse {
+      0%,100% { opacity: 0.4; }
+      50%      { opacity: 0.9; }
+    }
+
+    /* ---- FILTERS ---- */
+    #filters-container {
+      position: fixed;
+      left: 40px;
+      top: 230px;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-height: calc(100vh - 280px);
+    }
+
+    #filters-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border-left: none;
+      padding: 0;
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    #filters-wrap::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+    .filter-btn {
+      background: none;
+      border: none;
+      color: #000000;
+      font-family: var(--font-main);
+      font-size: 15px;
+      font-weight: 100;
+      line-height: 1.35;
+      text-align: left;
+      cursor: none;
+      letter-spacing: 0.03em;
+      transition: all 0.3s ease;
+      opacity: 0.8;
+    }
+
+    .filter-btn:hover { color: #000; opacity: 1; transform: translateX(5px); }
+    .filter-btn.active { 
+      color: var(--primary); 
+      opacity: 1; 
+      font-weight: 700; 
+      text-decoration: underline;
+    }
+
+    #about {
+      position: fixed;
+      top: 70px;
+      left: 28px;
+      z-index: 1100;
+      width: min(350px, calc(150vw - 56px));
+      color: var(--text-dim);
+      font-family: var(--font-main);
+      text-align: left;
+      pointer-events: none;
+    }
+
+    #about-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 8px;
+    }
+
+    #about-text {
+      font-size: 12px;
+      font-weight: 100;
+      line-height: 1.35;
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 820px) {
+      #about {
+        top: 94px;
+        right: 18px;
+        width: min(240px, calc(100vw - 36px));
+      }
+    }
+
+  </style>
+</head>
+<body>
+<div id="custom-cursor" aria-hidden="true"></div>
+<img src="p2/logo.png" alt="NASA" id="top-left-logo">
+
+<!-- LOADER -->
+<div id="loader">
+  <video class="loader-video" autoplay loop muted playsinline>
+    <source src="p2/logo_animato.mp4" type="video/mp4">
+  </video>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+  <div class="loader-text">Caricamento progetti in orbita…</div>
+</div>
+
+<!-- STARS -->
+<canvas id="starfield"></canvas>
+
+<!-- SCENE -->
+<div id="scene">
+  <canvas id="orbit-canvas"></canvas>
+  <div id="orbit-root"></div>
+</div>
+
+<!-- FILTERS -->
+<div id="filters-container">
+  <div id="filters-wrap"></div>
+</div>
+
+<!-- ABOUT -->
+<section id="about" aria-labelledby="about-title">
+  <div id="about-title">About</div>
+  <p id="about-text">This archive celebrates NASA's 70th anniversary through student projects orbiting in a shared digital space. Each work becomes a small satellite of ideas, inviting visitors to explore missions, images, sounds, data and stories created for the opening of NASA70.</p>
+</section>
+
+<!-- HINT -->
+<div id="hint">clicca ovunque, poi scorri per navigare</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" role="dialog" aria-modal="true">
+  <div id="modal-gallery">
+    <div id="modal-related-left" class="modal-related" aria-label="Progetti precedenti"></div>
+    <div id="modal">
+      <img id="modal-img" src="" alt="">
+      <div id="modal-body">
+        <div id="modal-title"></div>
+        <div id="modal-author"></div>
+        <div id="modal-date"></div>
+        <div id="modal-desc"></div>
+        <div id="modal-tags"></div>
+        <div id="modal-actions">
+          <a id="modal-link" class="btn-primary" href="#" target="_blank" rel="noopener">Visita il progetto ↗</a>
+          <button class="btn-close" id="modal-close">Chiudi</button>
+        </div>
+      </div>
+    </div>
+    <div id="modal-related-right" class="modal-related" aria-label="Progetti successivi"></div>
+  </div>
+</div>
+
+<script>
+// ---- CUSTOM CURSOR ----
+(function() {
+  const cursor = document.getElementById('custom-cursor');
+  const hoverSelector = 'a, button, input, .meteorite-inner, .related-card, .tag';
+
+  if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
+
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = `${e.clientX}px`;
+    cursor.style.top = `${e.clientY}px`;
+    cursor.classList.toggle('is-hovering', Boolean(e.target.closest(hoverSelector)));
+  });
+
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+  });
+
+  document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '1';
+  });
+})();
+
+// ---- STARFIELD ----
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    stars = [];
+    const n = Math.floor((canvas.width * canvas.height) / 2200);
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.005,
+        speed: Math.random() * 0.06 + 0.01
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      s.a = Math.max(0.1, Math.min(1, s.a + s.da));
+      if (Math.random() < 0.005) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,0,0,${s.a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+// ---- DATA + ORBIT ----
+// ---- IMAGE CONFIG ----
+const DATA_URL = "https://ixd-supsi.github.io/n70api/data.json";
+const IMAGE_URL = "https://raw.githubusercontent.com/ixd-supsi/n70api/main/immagini/";
+const PLACEHOLDER_IMAGE = `${IMAGE_URL}projectmoonbound_1.jpg`;
+
+// ---- GET IMAGE FILE ----
+function getImageFile(item) {
+  // prova tutti i possibili campi
+  let file =
+    item.immagine_1 ||
+    item.immagine1 ||
+    item.image ||
+    item.img ||
+    item.thumbnail ||
+    (Array.isArray(item.immagine) ? item.immagine[0] : item.immagine) ||
+    (Array.isArray(item.immagini) ? item.immagini[0] : item.immagini);
+
+  // se non esiste ritorna null
+  if (!file) {
+    console.warn("Nessuna immagine trovata per:", item);
+    return null;
+  }
+
+  // rimuove slash iniziali
+  file = file.replace(/^\/+/, "");
+
+  return file;
+}
+
+function getImageUrl(item) {
+  const file = getImageFile(item);
+  if (!file || file.includes("...")) return PLACEHOLDER_IMAGE;
+  if (/^https?:\/\//i.test(file)) return file;
+  return IMAGE_URL + file.split('/').map(encodeURIComponent).join('/');
+}
+
+function usePlaceholderImage(imgEl) {
+  if (imgEl.src !== PLACEHOLDER_IMAGE) {
+    imgEl.src = PLACEHOLDER_IMAGE;
+  }
+}
+
+const scene = document.getElementById('scene');
+const orbitRoot = document.getElementById('orbit-root');
+const orbitCanvas = document.getElementById('orbit-canvas');
+const overlay = document.getElementById('modal-overlay');
+const loaderBar = document.getElementById('loader-bar');
+const loader = document.getElementById('loader');
+const hint = document.getElementById('hint');
+const modalImage = document.getElementById('modal-img');
+modalImage.onerror = () => { usePlaceholderImage(modalImage); };
+
+function resizeOrbitCanvas() {
+  if (!orbitCanvas) return;
+  orbitCanvas.width = window.innerWidth;
+  orbitCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeOrbitCanvas);
+resizeOrbitCanvas();
+
+// Animate loader bar
+requestAnimationFrame(() => { loaderBar.style.width = '80%'; });
+
+let paused = false;
+let startTime = null; // Used for animation timing
+let lastFrameTime = null;
+let autoOrbitProgress = 0;
+let orbitProgress = 0;
+let manualControl = false;
+let lastTouchY = null;
+let lastTouchTime = 0;
+
+// Global variables for current orbit state, will be updated by tag selection
+let currentOrbitRadiusX = 300;
+let currentOrbitRadiusY = 200;
+let currentTiltX = 80;
+let currentTiltZ = -120;
+let currentOrbitSpeedMultiplier = 1; // Multiplier for overall orbit speed
+let currentWaveAmp = 0;
+let currentWaveFreq = 0;
+let modalProjects = [];
+
+let targetOrbitRadiusX = 300;
+let targetOrbitRadiusY = 200;
+let targetTiltX = 80;
+let targetTiltZ = -120;
+let targetOrbitSpeedMultiplier = 1;
+let targetWaveAmp = 0;
+let targetWaveFreq = 0;
+
+let activeModalProjects = [];
+let currentModalItem = null;
+
+
+// We'll spread meteorites evenly around the ring
+// Each meteorite has a phase offset and angular speed
+
+let meteorites = []; // {el, inner, angle, speed, data}
+
+function degToRad(d) { return d * Math.PI / 180; }
+
+function normalizeTagKey(tag) {
+  return (tag || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+function isModalOpen() {
+  return overlay.classList.contains('open');
+}
+
+function enableManualOrbit() {
+  if (isModalOpen()) return;
+  if (!manualControl) {
+    manualControl = true;
+    orbitProgress = autoOrbitProgress;
+    hint.textContent = "scorri su e giu per ruotare l'orbita";
+  }
+}
+
+function toggleOrbitMode() {
+  if (isModalOpen()) return;
+  if (manualControl) {
+    autoOrbitProgress = orbitProgress;
+    manualControl = false;
+    hint.textContent = "clicca ovunque, poi scorri per navigare";
+  } else {
+    enableManualOrbit();
+  }
+}
+
+function moveManualOrbit(deltaY) {
+  if (!manualControl || isModalOpen()) return;
+  orbitProgress += deltaY * 0.02;
+}
+
+// Define orbit configurations for different tags
+const tagOrbitConfigs = {
+  'all': {
+    orbitRadiusX: 300,
+    orbitRadiusY: 200,
+    tiltX: 80,
+    tiltZ: -120,
+    orbitSpeedMultiplier: 1,
+    waveAmp: 0,
+    waveFreq: 0
+  },
+  'nasa70': {
+    orbitRadiusX: 250,
+    orbitRadiusY: 250,
+    tiltX: 45,
+    tiltZ: 45,
+    orbitSpeedMultiplier: 1.2,
+    waveAmp: 10,
+    waveFreq: 8
+  },
+  'sounds': {
+    orbitRadiusX: 220,
+    orbitRadiusY: 100,
+    tiltX: 10,
+    tiltZ: 50,
+    orbitSpeedMultiplier: 2.0,
+    waveAmp: 30,
+    waveFreq: 20 // Effetto "vibrazione" sonora
+  },
+  'moon': {
+    orbitRadiusX: 280,
+    orbitRadiusY: 280,
+    tiltX: -100,
+    tiltZ: -160,
+    orbitSpeedMultiplier: 0.7,
+    waveAmp: 5,
+    waveFreq: 2
+  },
+  'climate change': {
+    orbitRadiusX: 450,
+    orbitRadiusY: 220,
+    tiltX: 50,
+    tiltZ: -110,
+    orbitSpeedMultiplier: 1.1,
+    waveAmp: 35,
+    waveFreq: 5
+  },
+  'satellites': {
+    orbitRadiusX: 380,
+    orbitRadiusY: 120,
+    tiltX: 75,
+    tiltZ: 0,
+    orbitSpeedMultiplier: 0.9,
+    waveAmp: 0,
+    waveFreq: 0
+  },
+  'satelliti': {
+    orbitRadiusX: 380,
+    orbitRadiusY: 120,
+    tiltX: -45,
+    tiltZ: 60,
+    orbitSpeedMultiplier: 1.3,
+    waveAmp: 10,
+    waveFreq: 4
+  },
+  'spazio': {
+    orbitRadiusX: 300,
+    orbitRadiusY: 200,
+    tiltX: 80,
+    tiltZ: -120,
+    orbitSpeedMultiplier: 1,
+    waveAmp: 0,
+    waveFreq: 0
+  },
+  'space': {
+    orbitRadiusX: 300,
+    orbitRadiusY: 200,
+    tiltX: 80,
+    tiltZ: -120,
+    orbitSpeedMultiplier: 1,
+    waveAmp: 0,
+    waveFreq: 0
+  },
+  'game': {
+    orbitRadiusX: 270,
+    orbitRadiusY: 230,
+    tiltX: 80,
+    tiltZ: -80,
+    orbitSpeedMultiplier: 1.8,
+    waveAmp: 20,
+    waveFreq: 15
+  },
+  'educational': {
+    orbitRadiusX: 350,
+    orbitRadiusY: 250,
+    tiltX: 60,
+    tiltZ: -160,
+    orbitSpeedMultiplier: 0.9,
+    waveAmp: 15,
+    waveFreq: 0
+  },
+  'solar system': {
+    orbitRadiusX: 500,
+    orbitRadiusY: 150,
+    tiltX: 30,
+    tiltZ: -30,
+    orbitSpeedMultiplier: 0.5,
+    waveAmp: 20,
+    waveFreq: 4
+  },
+  'stars': {
+    orbitRadiusX: 500,
+    orbitRadiusY: 400,
+    tiltX: 120,
+    tiltZ: 60,
+    orbitSpeedMultiplier: 0.4,
+    waveAmp: 80,
+    waveFreq: 1
+  },
+  'exploration': {
+    orbitRadiusX: 420,
+    orbitRadiusY: 180,
+    tiltX: 70,
+    tiltZ: -100,
+    orbitSpeedMultiplier: 0.8,
+    waveAmp: 40,
+    waveFreq: 3
+  },
+  'mars': {
+    orbitRadiusX: 300,
+    orbitRadiusY: 200,
+    tiltX: 80,
+    tiltZ: -120,
+    orbitSpeedMultiplier: 1,
+    waveAmp: 0,
+    waveFreq: 0
+  },
+  'exoplanets': {
+    orbitRadiusX: 300,
+    orbitRadiusY: 200,
+    tiltX: 80,
+    tiltZ: -120,
+    orbitSpeedMultiplier: 1,
+    waveAmp: 0,
+    waveFreq: 0
+  },
+  'gravity': {
+    orbitRadiusX: 250,
+    orbitRadiusY: 500,
+    tiltX: 10,
+    tiltZ: 90,
+    orbitSpeedMultiplier: 1.1,
+    waveAmp: 60,
+    waveFreq: 4
+  },
+  'kids': {
+    orbitRadiusX: 280,
+    orbitRadiusY: 280,
+    tiltX: 0,
+    tiltZ: 0,
+    orbitSpeedMultiplier: 2.2,
+    waveAmp: 40,
+    waveFreq: 10
+  },
+  'visualization': {
+    orbitRadiusX: 400,
+    orbitRadiusY: 280,
+    tiltX: 45,
+    tiltZ: -45,
+    orbitSpeedMultiplier: 1.4,
+    waveAmp: 20,
+    waveFreq: 8
+  },
+  'telescope': {
+    orbitRadiusX: 480,
+    orbitRadiusY: 200,
+    tiltX: 60,
+    tiltZ: 100,
+    orbitSpeedMultiplier: 0.7,
+    waveAmp: 30,
+    waveFreq: 2
+  },
+  'missions': {
+    orbitRadiusX: 320,
+    orbitRadiusY: 320,
+    tiltX: -30,
+    tiltZ: -30,
+    orbitSpeedMultiplier: 1.0,
+    waveAmp: 5,
+    waveFreq: 5
+  },
+  'nebula': {
+    orbitRadiusX: 520,
+    orbitRadiusY: 420,
+    tiltX: 110,
+    tiltZ: 10,
+    orbitSpeedMultiplier: 0.4,
+    waveAmp: 70,
+    waveFreq: 3
+  }
+};
+
+const visibleTagOrbitConfigs = {
+  '2d': { orbitRadiusX: 330, orbitRadiusY: 165, tiltX: 90, tiltZ: 0, orbitSpeedMultiplier: 1.05, waveAmp: 0, waveFreq: 0 },
+  '3d': { orbitRadiusX: 360, orbitRadiusY: 310, tiltX: 36, tiltZ: 32, orbitSpeedMultiplier: 0.95, waveAmp: 34, waveFreq: 3 },
+  'apollo': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0 },
+  'apollo-program': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0  },
+  'archive': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0  },
+  'astronomy': { orbitRadiusX: 520, orbitRadiusY: 380, tiltX: 118, tiltZ: 55, orbitSpeedMultiplier: 0.42, waveAmp: 70, waveFreq: 1 },
+  'earth': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0  },
+  'history': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0 },
+  'planet': { orbitRadiusX: 500, orbitRadiusY: 150, tiltX: 30, tiltZ: -30, orbitSpeedMultiplier: 0.5, waveAmp: 20, waveFreq: 4 },
+  'aerospace': { orbitRadiusX: 380, orbitRadiusY: 120, tiltX: 75, tiltZ: 0, orbitSpeedMultiplier: 0.9, waveAmp: 0, waveFreq: 0 },
+  'asteroids': { orbitRadiusX: 360, orbitRadiusY: 310, tiltX: 100, tiltZ: -10, orbitSpeedMultiplier: 1.45, waveAmp: 36, waveFreq: 9 },
+  'audio': { orbitRadiusX: 220, orbitRadiusY: 100, tiltX: 10, tiltZ: 50, orbitSpeedMultiplier: 2.0, waveAmp: 30, waveFreq: 20 },
+  'data visualization': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0  },
+  'deep space': { orbitRadiusX: 300, orbitRadiusY: 200, tiltX: 80, tiltZ: -120, orbitSpeedMultiplier: 1, waveAmp: 0, waveFreq: 0 }
+};
+
+function createOrbitConfigForTag(tag) {
+  const key = normalizeTagKey(tag);
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  }
+  const value = Math.abs(hash);
+  return {
+    orbitRadiusX: 240 + (value % 340),
+    orbitRadiusY: 110 + ((value >> 3) % 310),
+    tiltX: -120 + ((value >> 6) % 260),
+    tiltZ: -180 + ((value >> 10) % 360),
+    orbitSpeedMultiplier: 0.35 + ((value >> 14) % 180) / 100,
+    waveAmp: ((value >> 18) % 70),
+    waveFreq: 1 + ((value >> 22) % 9)
+  };
+}
+
+function getOrbitConfig(tag) {
+  const key = normalizeTagKey(tag);
+  if (!key || key === 'all') return tagOrbitConfigs.all;
+  return visibleTagOrbitConfigs[key] || tagOrbitConfigs[key] || createOrbitConfigForTag(key);
+}
+
+// Helper per formattare il testo: Prima maiuscola, resto minuscolo (esclude NASA70)
+function formatText(str) {
+  if (!str) return "";
+  if (str.toUpperCase() === "NASA70") return "NASA70";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function buildMeteoriteEl(item, img) {
+  const wrap = document.createElement('div');
+  wrap.className = 'meteorite';
+  wrap.style.position = 'absolute';
+  wrap.style.width = '0';
+  wrap.style.height = '0';
+  wrap.style.top = '50%';
+  wrap.style.left = '50%';
+
+  const inner = document.createElement('div');
+  inner.className = 'meteorite-inner';
+  inner.style.transform = 'translate(-50%, -50%)';
+
+  const card = document.createElement('div');
+  card.className = 'met-card';
+
+  const imgEl = document.createElement('img');
+imgEl.className = 'met-img';
+imgEl.alt = item.titolo;
+imgEl.loading = 'lazy';
+
+// se esiste immagine usa quella
+if (img) {
+  imgEl.src = img;
+} else {
+  imgEl.src = PLACEHOLDER_IMAGE;
+}
+
+// fallback se immagine non caricata
+imgEl.onerror = () => {
+  console.error("Immagine non trovata:", imgEl.src);
+  usePlaceholderImage(imgEl);
+};
+
+  const title = document.createElement('div');
+  title.className = 'met-title';
+  title.textContent = formatText(item.titolo);
+
+  const author = document.createElement('div');
+  author.className = 'met-author';
+  author.textContent = formatText(item.autore);
+
+  card.appendChild(imgEl);
+  card.appendChild(title);
+  card.appendChild(author);
+  inner.appendChild(card);
+  wrap.appendChild(inner);
+
+  card.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openModal(item);
+  });
+
+  return { wrap, inner, title, author };
+}
+
+function renderModalRelated() {
+  const leftEl = document.getElementById('modal-related-left');
+  const rightEl = document.getElementById('modal-related-right');
+  leftEl.innerHTML = '';
+  rightEl.innerHTML = '';
+
+  const relatedProjects = activeModalProjects.length ? activeModalProjects : modalProjects;
+  const currentIndex = relatedProjects.indexOf(currentModalItem);
+
+  function createRelatedCard(project) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'related-card';
+
+    const img = document.createElement('img');
+    img.className = 'related-img';
+    img.src = getImageUrl(project);
+    img.alt = project.titolo || '';
+    img.loading = 'lazy';
+    img.onerror = () => { usePlaceholderImage(img); };
+
+    const title = document.createElement('div');
+    title.className = 'related-title';
+    title.textContent = formatText(project.titolo);
+
+    const author = document.createElement('div');
+    author.className = 'related-author';
+    author.textContent = formatText(project.autore);
+
+    card.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(author);
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openModal(project);
+    });
+
+    return card;
+  }
+
+  const previousProjects = currentIndex >= 0
+    ? relatedProjects.slice(0, currentIndex)
+    : relatedProjects.filter(project => project !== currentModalItem);
+  const nextProjects = currentIndex >= 0
+    ? relatedProjects.slice(currentIndex + 1)
+    : [];
+
+  previousProjects.forEach(project => {
+    leftEl.appendChild(createRelatedCard(project));
+  });
+
+  nextProjects.forEach(project => {
+    rightEl.appendChild(createRelatedCard(project));
+  });
+
+  leftEl.scrollLeft = leftEl.scrollWidth;
+  rightEl.scrollLeft = 0;
+}
+
+function openModal(item) {
+  paused = true;
+  currentModalItem = item;
+  const imagePath = getImageUrl(item);
+  
+  modalImage.src = imagePath;
+  modalImage.alt = item.titolo;
+  document.getElementById('modal-title').textContent = formatText(item.titolo);
+  document.getElementById('modal-author').textContent = formatText(item.autore);
+  document.getElementById('modal-date').textContent =
+    `${item.data.giorno}. ${item.data.mese}. ${item.data.anno}`;
+  document.getElementById('modal-desc').textContent = item.descrizione || '';
+  const tagsEl = document.getElementById('modal-tags');
+  tagsEl.innerHTML = '';
+  (item.tags || []).forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = formatText(t);
+    tagsEl.appendChild(span);
+  });
+  document.getElementById('modal-link').href = item.url;
+  renderModalRelated();
+  overlay.classList.add('open');
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  paused = false;
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#modal-overlay')) return;
+  if (Date.now() - lastTouchTime < 500) return;
+  toggleOrbitMode();
+});
+document.addEventListener('wheel', (e) => {
+  if (!manualControl || isModalOpen()) return;
+  e.preventDefault();
+  moveManualOrbit(e.deltaY);
+}, { passive: false });
+document.addEventListener('touchstart', (e) => {
+  if (isModalOpen() || e.touches.length === 0) return;
+  lastTouchTime = Date.now();
+  enableManualOrbit();
+  lastTouchY = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchmove', (e) => {
+  if (!manualControl || isModalOpen() || e.touches.length === 0 || lastTouchY === null) return;
+  e.preventDefault();
+  const currentY = e.touches[0].clientY;
+  moveManualOrbit(lastTouchY - currentY);
+  lastTouchY = currentY;
+}, { passive: false });
+document.addEventListener('touchend', () => {
+  lastTouchY = null;
+});
+
+function drawOrbitTrace() {
+  if (!orbitCanvas) return;
+  const oCtx = orbitCanvas.getContext('2d');
+  oCtx.clearRect(0, 0, orbitCanvas.width, orbitCanvas.height);
+  oCtx.beginPath();
+  oCtx.strokeStyle = 'rgba(0, 0, 0, 0.25)'; // Traccia più scura e definita
+  oCtx.lineWidth = 1;
+
+  const segments = 128; // Risoluzione della linea dell'orbita
+  const centerX = orbitCanvas.width / 2;
+  const centerY = orbitCanvas.height / 2;
+
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2 + orbitProgress * 0.08;
+    const wave = Math.sin(angle * currentWaveFreq) * currentWaveAmp;
+    const x = Math.cos(angle) * (currentOrbitRadiusX + wave);
+    const y = Math.sin(angle) * (currentOrbitRadiusY + wave);
+
+    const tX = degToRad(currentTiltX);
+    const tZ = degToRad(currentTiltZ);
+    const px = x;
+    const py = -y * Math.sin(tX);
+    const pz = y * Math.cos(tX);
+    const fx = px * Math.cos(tZ) - py * Math.sin(tZ);
+    const fy = px * Math.sin(tZ) + py * Math.cos(tZ);
+    const fz = pz;
+
+    const persp = 900;
+    const scale = persp / (persp + fz);
+    const sx = centerX + fx * scale;
+    const sy = centerY + fy * scale;
+
+    if (i === 0) oCtx.moveTo(sx, sy);
+    else oCtx.lineTo(sx, sy);
+  }
+  oCtx.stroke();
+}
+
+function animate(ts) {
+  if (!startTime) startTime = ts;
+  if (!lastFrameTime) lastFrameTime = ts;
+  const deltaSeconds = (ts - lastFrameTime) * 0.001;
+  lastFrameTime = ts;
+
+  if (!paused) {
+    const orbitLerp = 0.05;
+    currentOrbitRadiusX += (targetOrbitRadiusX - currentOrbitRadiusX) * orbitLerp;
+    currentOrbitRadiusY += (targetOrbitRadiusY - currentOrbitRadiusY) * orbitLerp;
+    currentTiltX += (targetTiltX - currentTiltX) * orbitLerp;
+    currentTiltZ += (targetTiltZ - currentTiltZ) * orbitLerp;
+    currentOrbitSpeedMultiplier += (targetOrbitSpeedMultiplier - currentOrbitSpeedMultiplier) * orbitLerp;
+    currentWaveAmp += (targetWaveAmp - currentWaveAmp) * orbitLerp;
+    currentWaveFreq += (targetWaveFreq - currentWaveFreq) * orbitLerp;
+
+    if (!manualControl) {
+      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier;
+      orbitProgress = autoOrbitProgress;
+    }
+
+    drawOrbitTrace();
+
+    meteorites.forEach(m => {
+      const baseLerp = 0.05;
+      let diff = m.targetBaseAngle - m.baseAngle;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      m.baseAngle += diff * baseLerp;
+
+      m.angle = m.baseAngle + orbitProgress * m.speed;
+      const rad = m.angle;
+      const wave = Math.sin(rad * currentWaveFreq) * currentWaveAmp;
+      const x = Math.cos(rad) * (currentOrbitRadiusX + wave);
+      const y = Math.sin(rad) * (currentOrbitRadiusY + wave);
+
+      // Project from the tilted ring plane to screen
+      const tiltX = degToRad(currentTiltX); // Use current tilt
+      const tiltZ = degToRad(currentTiltZ); // Use current tilt
+
+      // 3D coords in ring plane: (x, 0, y)
+      // After rotateX(tiltX): (x, -z*sin + 0*cos, 0*sin + z*cos) = (x, -y*sin(tiltX), y*cos(tiltX))
+      const px = x;
+      const py = -y * Math.sin(tiltX);
+      const pz = y * Math.cos(tiltX);
+      
+      // After rotateZ(tiltZ):
+      const fx = px * Math.cos(tiltZ) - py * Math.sin(tiltZ);
+      const fy = px * Math.sin(tiltZ) + py * Math.cos(tiltZ);
+      const fz = pz;
+      
+      // Perspective
+      const persp = 900;
+      const scale = persp / (persp + fz);
+      const sx = fx * scale;
+      const sy = fy * scale;
+
+      m.wrap.style.transform =
+        `translate(${sx}px, ${sy}px) scale(${scale})`;
+
+      // Mantieni opacità piena e imposta z-index
+      m.wrap.style.zIndex = Math.round(1000 - fz);
+    });
+  }
+  requestAnimationFrame(animate);
+}
+
+async function init() {
+  try {
+    // Velocizza la riproduzione del video del loader
+    const loaderVideo = document.querySelector('.loader-video');
+    if (loaderVideo) {
+      loaderVideo.playbackRate = 3;
+    }
+    
+    // Initialize orbit parameters with 'all' config
+    const initialConfig = getOrbitConfig('all');
+    targetOrbitRadiusX = currentOrbitRadiusX = initialConfig.orbitRadiusX;
+    targetOrbitRadiusY = currentOrbitRadiusY = initialConfig.orbitRadiusY;
+    targetTiltX = currentTiltX = initialConfig.tiltX;
+    targetTiltZ = currentTiltZ = initialConfig.tiltZ;
+    targetOrbitSpeedMultiplier = currentOrbitSpeedMultiplier = initialConfig.orbitSpeedMultiplier;
+    targetWaveAmp = currentWaveAmp = initialConfig.waveAmp || 0;
+    targetWaveFreq = currentWaveFreq = initialConfig.waveFreq || 0;
+
+    const rawData = await fetch(DATA_URL).then(r => {
+      if (!r.ok) throw new Error(`Errore API: ${r.status}`);
+      return r.json();
+    });
+    modalProjects = rawData;
+    activeModalProjects = rawData;
+    // Moltiplica i progetti fino a raggiungere 100 elementi in orbita
+    const data = Array.from({ length: 100 }, (_, i) => rawData[i % rawData.length]);
+    loaderBar.style.width = '100%';
+
+    // Funzione per pulire i tag e unificare i duplicati (2D, 3D, 3D program)
+    const cleanTag = (t) => {
+      const s = (t || "").trim();
+      if (s.toLowerCase() === "3d" || s.toLowerCase() === "3d program") return "3D";
+      if (s.toLowerCase() === "2d") return "2D";
+      return s;
+    };
+
+    const itemTagKeys = (item) => (item.tags || []).map(t => normalizeTagKey(cleanTag(t)));
+
+    const uniqueTags = [...new Set(data.flatMap(item => (item.tags || []).map(cleanTag)))]
+      .filter(t => t.length > 0)
+      .sort((a, b) => a.localeCompare(b));
+
+    const filtersContainer = document.getElementById('filters-wrap');
+    let currentFilter = 'all';
+    let showAllTags = false;
+    
+    const renderFilters = () => {
+      filtersContainer.innerHTML = '';
+
+      // Calcola i conteggi per tutti i tag unici
+      const tagCounts = {};
+      uniqueTags.forEach(tag => {
+        const tagKey = normalizeTagKey(tag);
+        tagCounts[tag] = rawData.filter(item => itemTagKeys(item).includes(tagKey)).length;
+      });
+
+      // Filtra i tag: se non showAllTags, mostra solo quelli con almeno 2 occorrenze
+      let filteredTags = showAllTags 
+        ? uniqueTags 
+        : uniqueTags.filter(t => tagCounts[t] >= 2);
+
+      // Ordina i tag
+      filteredTags.sort((a, b) => {
+        const countDiff = tagCounts[b] - tagCounts[a];
+        return countDiff !== 0 ? countDiff : a.localeCompare(b);
+      });
+
+      const displayList = ['all', ...filteredTags];
+
+      displayList.forEach(tag => {
+        // Contatore progetti per tag (usando la logica di pulizia)
+        const count = tag === 'all' 
+          ? data.length 
+          : data.filter(item => itemTagKeys(item).includes(normalizeTagKey(tag))).length;
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (tag === currentFilter ? ' active' : '');
+        
+        const tagLabel = tag === 'all' ? 'NASA70' : formatText(tag);
+        btn.textContent = tag === 'all' ? `${tagLabel} [${count}]` : `${tagLabel} [${count}]`;
+        
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          currentFilter = tag;
+          const targetTag = tag === 'all' ? null : normalizeTagKey(tag);
+          activeModalProjects = targetTag
+            ? rawData.filter(item => itemTagKeys(item).includes(targetTag))
+            : rawData;
+
+          // Get the orbit config for the current tag, with a generated fallback for new API tags
+          const config = getOrbitConfig(tag);
+
+          // Update global orbit parameters
+          targetOrbitRadiusX = config.orbitRadiusX;
+          targetOrbitRadiusY = config.orbitRadiusY;
+          targetTiltX = config.tiltX;
+          targetTiltZ = config.tiltZ;
+          targetOrbitSpeedMultiplier = config.orbitSpeedMultiplier;
+          targetWaveAmp = config.waveAmp || 0;
+          targetWaveFreq = config.waveFreq || 0;
+
+          // Filtra i meteoriti visibili e ricalcola le posizioni per renderli equi-distanti nell'orbita
+          const visibleMeteorites = meteorites.filter(m => {
+            const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
+            m.wrap.style.display = isVisible ? 'block' : 'none';
+            return isVisible;
+          });
+
+          visibleMeteorites.forEach((m, idx) => {
+            m.targetBaseAngle = (idx / visibleMeteorites.length) * Math.PI * 2;
+          });
+          renderFilters();
+        };
+        filtersContainer.appendChild(btn);
+      });
+
+      // Aggiunge il tasto per espandere/comprimere l'elenco
+      const moreBtn = document.createElement('button');
+      moreBtn.className = 'filter-btn';
+      moreBtn.style.marginTop = '10px';
+      moreBtn.style.opacity = '0.4';
+      moreBtn.textContent = showAllTags ? '... Mostra meno' : '... Altri tag';
+      moreBtn.onclick = (e) => {
+        e.stopPropagation();
+        showAllTags = !showAllTags;
+        renderFilters();
+      };
+      filtersContainer.appendChild(moreBtn);
+    };
+
+    renderFilters();
+
+    data.forEach((item, i) => {
+      const baseAngle = (i / data.length) * Math.PI * 2;
+      const speed = 0.08; // Constant slower speed for all cards
+      const { wrap, inner, title, author } = buildMeteoriteEl(item, getImageUrl(item));
+      scene.appendChild(wrap);
+      meteorites.push({ wrap, inner, title, author, baseAngle, targetBaseAngle: baseAngle, angle: baseAngle, speed, data: item });
+    });
+
+    setTimeout(() => {
+      loader.classList.add('hidden');
+      setTimeout(() => { loader.style.display = 'none'; }, 700);
+    }, 600);
+
+    requestAnimationFrame(animate);
+
+  } catch (err) {
+    console.error(err);
+    loader.querySelector('.loader-text').textContent = 'Errore nel caricamento dei dati.';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
