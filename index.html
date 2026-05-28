@@ -161,19 +161,17 @@
       position: absolute;
       width: 0; height: 0;
       top: 50%; left: 50%;
-      transform-style: preserve-3d;
       pointer-events: none;
     }
 
     .meteorite-inner {
       position: absolute;
-      transform-style: preserve-3d;
       pointer-events: all;
       cursor: pointer;
     }
 
     .meteorite:hover {
-      z-index: 2000 !important;
+      z-index: 9999 !important;
     }
 
     .met-card {
@@ -185,10 +183,13 @@
       transition: transform 0.25s;
       pointer-events: all;
       text-align: center;
+      backface-visibility: hidden;
     }
 
     .met-card:hover {
-      transform: scale(1.6) translateZ(50px);
+      transform: scale(1.3);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     .met-img {
@@ -810,6 +811,8 @@ let orbitProgress = 0;
 let manualControl = false;
 let lastTouchY = null;
 let lastTouchTime = 0;
+let isHoveringCard = false;
+let currentHoverSlowdown = 1.0;
 
 // Global variables for current orbit state, will be updated by tag selection
 let currentOrbitRadiusX = 300;
@@ -1181,6 +1184,9 @@ imgEl.onerror = () => {
     openModal(item);
   });
 
+  card.addEventListener('mouseenter', () => { isHoveringCard = true; });
+  card.addEventListener('mouseleave', () => { isHoveringCard = false; });
+
   return { wrap, inner, title, author };
 }
 
@@ -1245,6 +1251,7 @@ function renderModalRelated() {
 
 function openModal(item) {
   paused = true;
+  isHoveringCard = false;
   currentModalItem = item;
   const imagePath = getImageUrl(item);
   
@@ -1319,8 +1326,11 @@ function animate(ts) {
     currentWaveAmp += (targetWaveAmp - currentWaveAmp) * orbitLerp;
     currentWaveFreq += (targetWaveFreq - currentWaveFreq) * orbitLerp;
 
+    const targetSlowdown = isHoveringCard ? 0.15 : 1.0;
+    currentHoverSlowdown += (targetSlowdown - currentHoverSlowdown) * 0.1;
+
     if (!manualControl) {
-      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier;
+      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier * currentHoverSlowdown;
       orbitProgress = autoOrbitProgress;
     }
 
@@ -1422,8 +1432,21 @@ async function init() {
     });
     modalProjects = rawData;
     activeModalProjects = rawData;
-    // Moltiplica i progetti fino a raggiungere 100 elementi in orbita
-    const data = Array.from({ length: 100 }, (_, i) => rawData[i % rawData.length]);
+
+    // Moltiplica i progetti fino a 100 con variazione del titolo
+    const data = Array.from({ length: 100 }, (_, i) => {
+      const source = rawData[i % rawData.length];
+      let title = source.titolo;
+
+      if (i >= rawData.length) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const randomChar = chars[Math.floor(Math.random() * chars.length)];
+        title = randomChar + "_" + title;
+      }
+
+      return { ...source, titolo: title };
+    });
+
     loaderBar.style.width = '100%';
 
     // Funzione per pulire i tag e unificare i duplicati (2D, 3D, 3D program)

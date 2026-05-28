@@ -21,6 +21,9 @@
       background: #f4f4f4;
       color: #000;
       font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
       overflow: hidden;
       cursor: none;
     }
@@ -97,12 +100,63 @@
 
     #top-left-logo {
       position: fixed;
-      top: 22px;
-      right: 28px;
-      width: 180px;
+      top: clamp(10px, 1.1vw, 22px);
+      right: clamp(22px, 2vw, 48px);
+      width: clamp(150px, 11vw, 230px);
       height: auto;
       z-index: 1200;
       pointer-events: none;
+    }
+
+    #view-toggle {
+      position: fixed;
+      top: clamp(24px, 2vw, 44px);
+      left: clamp(28px, 2.65vw, 64px);
+      z-index: 1300;
+      display: flex;
+      gap: clamp(14px, 1.2vw, 26px);
+      align-items: center;
+    }
+
+    .view-btn {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: #000;
+      font-family: var(--font-main);
+      font-size: clamp(13px, 0.95vw, 18px);
+      font-weight: 100;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      padding: 0 0 5px;
+      border-radius: 0;
+      cursor: none;
+      opacity: 0.62;
+      transition: opacity 0.2s, font-weight 0.2s;
+    }
+
+    .view-btn::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: #000;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.2s ease;
+    }
+
+    .view-btn:hover,
+    .view-btn.active {
+      opacity: 1;
+      font-weight: 700;
+    }
+
+    .view-btn:hover::after,
+    .view-btn.active::after {
+      transform: scaleX(1);
     }
 
     @keyframes fade-in { to { opacity: 1; } }
@@ -112,19 +166,17 @@
       position: absolute;
       width: 0; height: 0;
       top: 50%; left: 50%;
-      transform-style: preserve-3d;
       pointer-events: none;
     }
 
     .meteorite-inner {
       position: absolute;
-      transform-style: preserve-3d;
       pointer-events: all;
       cursor: pointer;
     }
 
     .meteorite:hover {
-      z-index: 2000 !important;
+      z-index: 9999 !important;
     }
 
     .met-card {
@@ -136,10 +188,13 @@
       transition: transform 0.25s;
       pointer-events: all;
       text-align: center;
+      backface-visibility: hidden;
     }
 
     .met-card:hover {
-      transform: scale(1.6) translateZ(50px);
+      transform: scale(1.3);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     .met-img {
@@ -160,7 +215,8 @@
       text-align: left;
       letter-spacing: 0.03em;
       text-shadow: none;
-      transition: color 0.3s ease;
+      overflow: hidden;
+      transition: opacity 0.22s ease, max-height 0.22s ease, margin-top 0.22s ease, color 0.3s ease;
     }
 
     .met-author {
@@ -171,7 +227,75 @@
       margin-top: 2px;
       text-align: left;
       text-shadow: none;
-      transition: color 0.3s ease;
+      overflow: hidden;
+      transition: opacity 0.22s ease, max-height 0.22s ease, margin-top 0.22s ease, color 0.3s ease;
+    }
+
+    .met-date {
+      display: none;
+      font-family: var(--font-main);
+      font-weight: 100;
+      font-size: 8px;
+      color: #555;
+      margin-top: 3px;
+      text-align: left;
+      letter-spacing: 0.04em;
+      overflow: hidden;
+      transition: opacity 0.22s ease, max-height 0.22s ease, margin-top 0.22s ease;
+    }
+
+    .met-card:not(:hover) .met-title,
+    .met-card:not(:hover) .met-author,
+    .met-card:not(:hover) .met-date {
+      opacity: 0;
+      max-height: 0;
+      margin-top: 0;
+    }
+
+    .met-card:hover .met-title {
+      opacity: 1;
+      max-height: 3.4em;
+      margin-top: 4px;
+    }
+
+    .met-card:hover .met-author,
+    .met-card:hover .met-date {
+      opacity: 1;
+      max-height: 2.4em;
+    }
+
+    body.timeline-view #filters-container {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.timeline-view .met-date {
+      display: block;
+    }
+
+    body.timeline-view .met-card {
+      width: clamp(42px, 3.05vw, 64px);
+      padding: clamp(2px, 0.2vw, 4px);
+    }
+
+    body.timeline-view .met-card:hover {
+      transform: scale(1.6);
+    }
+
+    body.timeline-view .met-img {
+      height: clamp(22px, 1.6vw, 36px);
+    }
+
+    body.timeline-view .met-title {
+      font-size: clamp(5px, 0.38vw, 7px);
+      line-height: 1.15;
+      margin-top: 3px;
+    }
+
+    body.timeline-view .met-author,
+    body.timeline-view .met-date {
+      font-size: clamp(4.5px, 0.33vw, 6px);
+      line-height: 1.15;
     }
 
     /* ---- MODAL ---- */
@@ -211,6 +335,29 @@
       position: relative;
       flex: 0 0 auto;
       z-index: 2;
+    }
+
+    .modal-x {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: rgba(255,255,255,0.82);
+      color: #000;
+      font-family: var(--font-main);
+      font-size: 18px;
+      font-weight: 100;
+      line-height: 1;
+      cursor: none;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .modal-x:hover {
+      background: #fff;
+      opacity: 0.7;
     }
 
     .modal-related {
@@ -341,10 +488,10 @@
 
     #modal-author {
       font-family: var(--font-main);
-      font-weight: 100;
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 24px;
+      font-weight: 400;
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 22px;
     }
 
     #modal-date {
@@ -403,21 +550,6 @@
     }
 
     .btn-primary:hover { background: #333; }
-
-    .btn-close {
-      background: transparent;
-      color: #000;
-      border: 1px solid #000;
-      border-radius: 0;
-      padding: 16px 24px;
-      font-family: var(--font-main);
-      font-size: 10px;
-      cursor: pointer;
-      letter-spacing: 0.08em;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    .btn-close:hover { color: #000; border-color: #000; }
 
     /* ---- LOADING ---- */
     #loader {
@@ -486,19 +618,19 @@
     /* ---- FILTERS ---- */
     #filters-container {
       position: fixed;
-      left: 40px;
-      top: 230px;
+      left: clamp(28px, 2.65vw, 64px);
+      top: clamp(185px, 20vh, 280px);
       z-index: 1100;
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      max-height: calc(100vh - 280px);
+      gap: clamp(14px, 1.3vw, 24px);
+      max-height: calc(100vh - clamp(230px, 25vh, 330px));
     }
 
     #filters-wrap {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: clamp(10px, 0.9vw, 18px);
       border-left: none;
       padding: 0;
       overflow-y: auto;
@@ -512,14 +644,28 @@
       border: none;
       color: #000000;
       font-family: var(--font-main);
-      font-size: 15px;
+      font-size: clamp(13px, 0.95vw, 18px);
       font-weight: 100;
       line-height: 1.35;
+      display: grid;
+      grid-template-columns: 3ch max-content;
+      gap: 12px;
+      align-items: baseline;
       text-align: left;
       cursor: none;
       letter-spacing: 0.03em;
       transition: all 0.3s ease;
       opacity: 0.8;
+    }
+
+    .filter-count {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      opacity: 0.62;
+    }
+
+    .filter-label {
+      text-align: left;
     }
 
     .filter-btn:hover { color: #000; opacity: 1; transform: translateX(5px); }
@@ -530,45 +676,16 @@
       text-decoration: underline;
     }
 
-    #about {
-      position: fixed;
-      top: 70px;
-      left: 28px;
-      z-index: 1100;
-      width: min(350px, calc(150vw - 56px));
-      color: var(--text-dim);
-      font-family: var(--font-main);
-      text-align: left;
-      pointer-events: none;
-    }
-
-    #about-title {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      margin-bottom: 8px;
-    }
-
-    #about-text {
-      font-size: 12px;
-      font-weight: 100;
-      line-height: 1.35;
-      letter-spacing: 0.03em;
-    }
-
-    @media (max-width: 820px) {
-      #about {
-        top: 94px;
-        right: 18px;
-        width: min(240px, calc(100vw - 36px));
-      }
-    }
-
   </style>
 </head>
 <body>
 <div id="custom-cursor" aria-hidden="true"></div>
 <img src="p2/logo.png" alt="NASA" id="top-left-logo">
+
+<nav id="view-toggle" aria-label="Cambia visualizzazione">
+  <button class="view-btn active" type="button" data-view="tags">A-Z</button>
+  <button class="view-btn" type="button" data-view="timeline">Timeline</button>
+</nav>
 
 <!-- LOADER -->
 <div id="loader">
@@ -593,12 +710,6 @@
   <div id="filters-wrap"></div>
 </div>
 
-<!-- ABOUT -->
-<section id="about" aria-labelledby="about-title">
-  <div id="about-title">About</div>
-  <p id="about-text">This archive celebrates NASA's 70th anniversary through student projects orbiting in a shared digital space. Each work becomes a small satellite of ideas, inviting visitors to explore missions, images, sounds, data and stories created for the opening of NASA70.</p>
-</section>
-
 <!-- HINT -->
 <div id="hint">clicca ovunque, poi scorri per navigare</div>
 
@@ -607,6 +718,7 @@
   <div id="modal-gallery">
     <div id="modal-related-left" class="modal-related" aria-label="Progetti precedenti"></div>
     <div id="modal">
+      <button class="modal-x" id="modal-close" type="button" aria-label="Chiudi">×</button>
       <img id="modal-img" src="" alt="">
       <div id="modal-body">
         <div id="modal-title"></div>
@@ -616,7 +728,6 @@
         <div id="modal-tags"></div>
         <div id="modal-actions">
           <a id="modal-link" class="btn-primary" href="#" target="_blank" rel="noopener">Visita il progetto ↗</a>
-          <button class="btn-close" id="modal-close">Chiudi</button>
         </div>
       </div>
     </div>
@@ -628,7 +739,7 @@
 // ---- CUSTOM CURSOR ----
 (function() {
   const cursor = document.getElementById('custom-cursor');
-  const hoverSelector = 'a, button, input, .meteorite-inner, .related-card, .tag';
+  const hoverSelector = 'a, button, input, .meteorite-inner, .related-card, .tag, .view-btn';
 
   if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
 
@@ -747,8 +858,12 @@ modalImage.onerror = () => { usePlaceholderImage(modalImage); };
 
 function resizeOrbitCanvas() {
   if (!orbitCanvas) return;
-  orbitCanvas.width = window.innerWidth;
-  orbitCanvas.height = window.innerHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  orbitCanvas.style.width = `${window.innerWidth}px`;
+  orbitCanvas.style.height = `${window.innerHeight}px`;
+  orbitCanvas.width = Math.round(window.innerWidth * dpr);
+  orbitCanvas.height = Math.round(window.innerHeight * dpr);
+  orbitCanvas.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 window.addEventListener('resize', resizeOrbitCanvas);
 resizeOrbitCanvas();
@@ -764,6 +879,8 @@ let orbitProgress = 0;
 let manualControl = false;
 let lastTouchY = null;
 let lastTouchTime = 0;
+let isHoveringCard = false;
+let currentHoverSlowdown = 1.0;
 
 // Global variables for current orbit state, will be updated by tag selection
 let currentOrbitRadiusX = 300;
@@ -774,6 +891,10 @@ let currentOrbitSpeedMultiplier = 1; // Multiplier for overall orbit speed
 let currentWaveAmp = 0;
 let currentWaveFreq = 0;
 let modalProjects = [];
+let currentView = 'tags';
+let currentFilter = 'all';
+let timelineProjects = [];
+let currentTimelineRotation = 0;
 
 let targetOrbitRadiusX = 300;
 let targetOrbitRadiusY = 200;
@@ -794,6 +915,81 @@ let meteorites = []; // {el, inner, angle, speed, data}
 
 function degToRad(d) { return d * Math.PI / 180; }
 
+function daysInYear(year) {
+  return ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 366 : 365;
+}
+
+function dayOfYear(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  return Math.floor((date - start) / 86400000);
+}
+
+function formatTimelineDate(date) {
+  return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function makeTimelineDate(index, total) {
+  const year = 2028;
+  const span = daysInYear(year);
+  const baseDay = Math.round((index / total) * (span - 1));
+  const jitter = ((index * 17) % 9) - 4;
+  const day = Math.max(0, Math.min(span - 1, baseDay + jitter));
+  return new Date(year, 0, 1 + day);
+}
+
+function getTimelineAngle(item) {
+  const date = item._timelineDate || makeTimelineDate(0, 1);
+  const fraction = (dayOfYear(date) - 1) / daysInYear(date.getFullYear());
+  return fraction * Math.PI * 2 - Math.PI * 0.08;
+}
+
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getViewportScale() {
+  const widthScale = window.innerWidth / 1512;
+  const heightScale = window.innerHeight / 982;
+  return clampNumber(Math.min(widthScale, heightScale), 0.75, 1.45);
+}
+
+function getTimelineOrbitConfig() {
+  const scale = getViewportScale();
+  return {
+    orbitRadiusX: clampNumber(480 * scale, 340, Math.min(window.innerWidth * 0.34, 760)),
+    orbitRadiusY: clampNumber(210 * scale, 150, Math.min(window.innerHeight * 0.27, 340)),
+    tiltX: 50,
+    tiltZ: -18,
+    orbitSpeedMultiplier: 0.05,
+    waveAmp: 0,
+    waveFreq: 0
+  };
+}
+
+function getTimelineOrbitOffset(rotation = currentTimelineRotation) {
+  const focalDistance = currentOrbitRadiusX * 0.3;
+  const focusVector = projectOrbitPoint(
+    rotation,
+    focalDistance,
+    0,
+    currentTiltX,
+    currentTiltZ
+  );
+
+  return {
+    x: -focusVector.x,
+    y: -focusVector.y
+  };
+}
+
+function getTimelineSceneShift() {
+  const scale = getViewportScale();
+  return {
+    x: clampNumber(170 * scale, 95, Math.min(window.innerWidth * 0.16, 260)),
+    y: -70 * scale
+  };
+}
+
 function normalizeTagKey(tag) {
   return (tag || '')
     .toString()
@@ -803,12 +999,27 @@ function normalizeTagKey(tag) {
     .replace(/\s+/g, ' ');
 }
 
+function cleanTag(t) {
+  const s = (t || "").trim();
+  if (s.toLowerCase() === "3d" || s.toLowerCase() === "3d program") return "3D";
+  if (s.toLowerCase() === "2d") return "2D";
+  return s;
+}
+
+function itemTagKeys(item) {
+  return (item.tags || []).map(t => normalizeTagKey(cleanTag(t)));
+}
+
+function compareProjectsAZ(a, b) {
+  return (a.titolo || '').localeCompare(b.titolo || '', 'it', { sensitivity: 'base' });
+}
+
 function isModalOpen() {
   return overlay.classList.contains('open');
 }
 
 function enableManualOrbit() {
-  if (isModalOpen()) return;
+  if (isModalOpen() || currentView === 'timeline') return;
   if (!manualControl) {
     manualControl = true;
     orbitProgress = autoOrbitProgress;
@@ -828,7 +1039,7 @@ function toggleOrbitMode() {
 }
 
 function moveManualOrbit(deltaY) {
-  if (!manualControl || isModalOpen()) return;
+  if (!manualControl || isModalOpen() || currentView === 'timeline') return;
   orbitProgress += deltaY * 0.02;
 }
 
@@ -1082,6 +1293,27 @@ function formatText(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+function projectOrbitPoint(angle, radiusX = currentOrbitRadiusX, radiusY = currentOrbitRadiusY, tiltXDeg = currentTiltX, tiltZDeg = currentTiltZ, centerX = 0, centerY = 0) {
+  const x = Math.cos(angle) * radiusX;
+  const y = Math.sin(angle) * radiusY;
+  const tiltX = degToRad(tiltXDeg);
+  const tiltZ = degToRad(tiltZDeg);
+  const px = x;
+  const py = -y * Math.sin(tiltX);
+  const pz = y * Math.cos(tiltX);
+  const fx = px * Math.cos(tiltZ) - py * Math.sin(tiltZ);
+  const fy = px * Math.sin(tiltZ) + py * Math.cos(tiltZ);
+  const fz = pz;
+  const persp = 900;
+  const scale = persp / (persp + fz);
+  return {
+    x: centerX + fx * scale,
+    y: centerY + fy * scale,
+    z: fz,
+    scale
+  };
+}
+
 function buildMeteoriteEl(item, img) {
   const wrap = document.createElement('div');
   wrap.className = 'meteorite';
@@ -1124,9 +1356,14 @@ imgEl.onerror = () => {
   author.className = 'met-author';
   author.textContent = formatText(item.autore);
 
+  const date = document.createElement('div');
+  date.className = 'met-date';
+  date.textContent = item._timelineLabel || '';
+
   card.appendChild(imgEl);
   card.appendChild(title);
   card.appendChild(author);
+  card.appendChild(date);
   inner.appendChild(card);
   wrap.appendChild(inner);
 
@@ -1135,7 +1372,10 @@ imgEl.onerror = () => {
     openModal(item);
   });
 
-  return { wrap, inner, title, author };
+  card.addEventListener('mouseenter', () => { isHoveringCard = true; });
+  card.addEventListener('mouseleave', () => { isHoveringCard = false; });
+
+  return { wrap, inner, title, author, date };
 }
 
 function renderModalRelated() {
@@ -1199,6 +1439,7 @@ function renderModalRelated() {
 
 function openModal(item) {
   paused = true;
+  isHoveringCard = false;
   currentModalItem = item;
   const imagePath = getImageUrl(item);
   
@@ -1207,7 +1448,7 @@ function openModal(item) {
   document.getElementById('modal-title').textContent = formatText(item.titolo);
   document.getElementById('modal-author').textContent = formatText(item.autore);
   document.getElementById('modal-date').textContent =
-    `${item.data.giorno}. ${item.data.mese}. ${item.data.anno}`;
+    item._timelineLabel || `${item.data.giorno}. ${item.data.mese}. ${item.data.anno}`;
   document.getElementById('modal-desc').textContent = item.descrizione || '';
   const tagsEl = document.getElementById('modal-tags');
   tagsEl.innerHTML = '';
@@ -1232,6 +1473,8 @@ overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 document.addEventListener('click', (e) => {
   if (e.target.closest('#modal-overlay')) return;
+  if (e.target.closest('#view-toggle')) return;
+  if (currentView === 'timeline') return;
   if (Date.now() - lastTouchTime < 500) return;
   toggleOrbitMode();
 });
@@ -1257,42 +1500,245 @@ document.addEventListener('touchend', () => {
   lastTouchY = null;
 });
 
+function setOrbitTarget(config) {
+  targetOrbitRadiusX = config.orbitRadiusX;
+  targetOrbitRadiusY = config.orbitRadiusY;
+  targetTiltX = config.tiltX;
+  targetTiltZ = config.tiltZ;
+  targetOrbitSpeedMultiplier = config.orbitSpeedMultiplier;
+  targetWaveAmp = config.waveAmp || 0;
+  targetWaveFreq = config.waveFreq || 0;
+}
+
+function applyTagsFilter(tag = currentFilter) {
+  currentFilter = tag;
+  const targetTag = tag === 'all' ? null : normalizeTagKey(tag);
+  activeModalProjects = targetTag
+    ? modalProjects.filter(item => itemTagKeys(item).includes(targetTag))
+    : modalProjects;
+  activeModalProjects = [...activeModalProjects].sort(compareProjectsAZ);
+
+  setOrbitTarget(getOrbitConfig(tag));
+
+  const visibleMeteorites = meteorites.filter(m => {
+    const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
+    m.wrap.style.display = isVisible ? 'block' : 'none';
+    return isVisible;
+  }).sort((a, b) => compareProjectsAZ(a.data, b.data));
+
+  visibleMeteorites.forEach((m, idx) => {
+    m.targetBaseAngle = visibleMeteorites.length ? (idx / visibleMeteorites.length) * Math.PI * 2 : 0;
+  });
+}
+
+function applyTimelineLayout() {
+  const config = getTimelineOrbitConfig();
+  setOrbitTarget(config);
+  const targetTag = currentFilter === 'all' ? null : normalizeTagKey(currentFilter);
+  const visibleTimelineProjects = targetTag
+    ? timelineProjects.filter(item => itemTagKeys(item).includes(targetTag))
+    : timelineProjects;
+  activeModalProjects = visibleTimelineProjects;
+  meteorites.forEach((m) => {
+    const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
+    m.wrap.style.display = isVisible ? 'block' : 'none';
+    m.targetBaseAngle = getTimelineAngle(m.data);
+  });
+}
+
+function setViewMode(view) {
+  currentView = view;
+  document.body.classList.toggle('timeline-view', currentView === 'timeline');
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === currentView);
+  });
+
+  if (currentView === 'timeline') {
+    manualControl = false;
+    orbitProgress = 0;
+    autoOrbitProgress = 0;
+    currentTimelineRotation = 0;
+    hint.textContent = "timeline 2028";
+    applyTimelineLayout();
+  } else {
+    hint.textContent = manualControl ? "scorri su e giu per ruotare l'orbita" : "clicca ovunque, poi scorri per navigare";
+    applyTagsFilter(currentFilter);
+  }
+}
+
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setViewMode(btn.dataset.view);
+  });
+});
+
+window.addEventListener('resize', () => {
+  if (currentView === 'timeline') applyTimelineLayout();
+});
+
 function drawOrbitTrace() {
   if (!orbitCanvas) return;
   const oCtx = orbitCanvas.getContext('2d');
-  oCtx.clearRect(0, 0, orbitCanvas.width, orbitCanvas.height);
-  oCtx.beginPath();
-  oCtx.strokeStyle = 'rgba(0, 0, 0, 0.25)'; // Traccia più scura e definita
-  oCtx.lineWidth = 1;
+  const viewWidth = orbitCanvas.clientWidth || window.innerWidth;
+  const viewHeight = orbitCanvas.clientHeight || window.innerHeight;
+  oCtx.clearRect(0, 0, viewWidth, viewHeight);
+  const isTimeline = currentView === 'timeline';
+  const sceneShift = isTimeline ? getTimelineSceneShift() : { x: 0, y: 0 };
+  const centerX = viewWidth / 2 + sceneShift.x;
+  const centerY = viewHeight / 2 + sceneShift.y;
+  const rotation = isTimeline ? currentTimelineRotation : orbitProgress * 0.08;
+  const timelineOffset = isTimeline ? getTimelineOrbitOffset(rotation) : { x: 0, y: 0 };
+  const orbitCenterX = centerX + timelineOffset.x;
+  const orbitCenterY = centerY + timelineOffset.y;
 
-  const segments = 128; // Risoluzione della linea dell'orbita
-  const centerX = orbitCanvas.width / 2;
-  const centerY = orbitCanvas.height / 2;
+  oCtx.beginPath();
+  oCtx.strokeStyle = isTimeline ? 'rgba(0, 0, 0, 0.36)' : 'rgba(0, 0, 0, 0.25)';
+  oCtx.lineWidth = isTimeline ? 1.2 : 1;
+  oCtx.lineCap = 'round';
+  oCtx.lineJoin = 'round';
+
+  const segments = 180;
 
   for (let i = 0; i <= segments; i++) {
-    const angle = (i / segments) * Math.PI * 2 + orbitProgress * 0.08;
+    const angle = (i / segments) * Math.PI * 2 + rotation;
     const wave = Math.sin(angle * currentWaveFreq) * currentWaveAmp;
-    const x = Math.cos(angle) * (currentOrbitRadiusX + wave);
-    const y = Math.sin(angle) * (currentOrbitRadiusY + wave);
+    const point = projectOrbitPoint(
+      angle,
+      currentOrbitRadiusX + wave,
+      currentOrbitRadiusY + wave,
+      currentTiltX,
+      currentTiltZ,
+      orbitCenterX,
+      orbitCenterY
+    );
 
-    const tX = degToRad(currentTiltX);
-    const tZ = degToRad(currentTiltZ);
-    const px = x;
-    const py = -y * Math.sin(tX);
-    const pz = y * Math.cos(tX);
-    const fx = px * Math.cos(tZ) - py * Math.sin(tZ);
-    const fy = px * Math.sin(tZ) + py * Math.cos(tZ);
-    const fz = pz;
-
-    const persp = 900;
-    const scale = persp / (persp + fz);
-    const sx = centerX + fx * scale;
-    const sy = centerY + fy * scale;
-
-    if (i === 0) oCtx.moveTo(sx, sy);
-    else oCtx.lineTo(sx, sy);
+    if (i === 0) oCtx.moveTo(point.x, point.y);
+    else oCtx.lineTo(point.x, point.y);
   }
   oCtx.stroke();
+
+  if (!isTimeline) return;
+
+  const lineDefinitions = [
+    { label: 'linea degli apsidi', angle: rotation, length: 1.18, dash: [] },
+    { label: 'equinozi', angle: rotation + Math.PI / 2, length: 1.04, dash: [5, 8] },
+    { label: 'solstizi', angle: rotation + Math.PI / 2 + degToRad(23.5), length: 1.08, dash: [2, 7] }
+  ];
+
+  oCtx.save();
+  oCtx.font = '12px Helvetica, Arial, sans-serif';
+  oCtx.textBaseline = 'middle';
+  oCtx.fillStyle = 'rgba(0,0,0,0.68)';
+  oCtx.lineCap = 'round';
+  oCtx.lineJoin = 'round';
+
+  const projectedLines = {};
+
+  lineDefinitions.forEach((line) => {
+    const a = currentOrbitRadiusX * line.length;
+    const b = currentOrbitRadiusY * line.length;
+    let start;
+    let end;
+
+    if (line.label === 'linea degli apsidi') {
+      start = projectOrbitPoint(line.angle + Math.PI, a, b, currentTiltX, currentTiltZ, orbitCenterX, orbitCenterY);
+      end = projectOrbitPoint(line.angle, a, b, currentTiltX, currentTiltZ, orbitCenterX, orbitCenterY);
+    } else if (line.label === 'equinozi') {
+      const axisLength = currentOrbitRadiusY * 1.1;
+      start = { x: centerX, y: centerY + axisLength };
+      end = { x: centerX, y: centerY - axisLength };
+    } else {
+      const axisLength = currentOrbitRadiusX * 0.78;
+      start = { x: centerX - axisLength, y: centerY };
+      end = { x: centerX + axisLength, y: centerY };
+    }
+
+    oCtx.beginPath();
+    oCtx.setLineDash(line.dash);
+    oCtx.strokeStyle = 'rgba(0,0,0,0.22)';
+    oCtx.lineWidth = 1;
+    oCtx.moveTo(start.x, start.y);
+    oCtx.lineTo(end.x, end.y);
+    oCtx.stroke();
+    oCtx.setLineDash([]);
+
+    if (line.label === 'solstizi') {
+      oCtx.textAlign = 'center';
+      oCtx.fillText(line.label, (centerX + start.x) / 2, centerY - 18);
+    } else {
+      const labelPad = end.x >= centerX ? 12 : -12;
+      oCtx.textAlign = end.x >= centerX ? 'left' : 'right';
+      oCtx.fillText(line.label, end.x + labelPad, end.y);
+    }
+    projectedLines[line.label] = { start, end };
+  });
+
+  const equinoxPoints = projectedLines.equinozi
+    ? [projectedLines.equinozi.start, projectedLines.equinozi.end].sort((a, b) => a.y - b.y)
+    : [];
+  const solsticePoints = projectedLines.solstizi
+    ? [projectedLines.solstizi.start, projectedLines.solstizi.end].sort((a, b) => a.x - b.x)
+    : [];
+  const apsidesPoints = projectedLines['linea degli apsidi']
+    ? [projectedLines['linea degli apsidi'].start, projectedLines['linea degli apsidi'].end].sort((a, b) => a.x - b.x)
+    : [];
+
+  const dateLabels = [
+    { label: '21 marzo', point: equinoxPoints[0] },
+    { label: '23 settembre', point: equinoxPoints[1] },
+    { label: '21 giugno', point: solsticePoints[0] },
+    { label: '21 dicembre', point: solsticePoints[1] },
+    { label: '3 luglio', point: apsidesPoints[0] },
+    { label: '3 gennaio', point: apsidesPoints[1] }
+  ].filter(item => item.point);
+
+  oCtx.font = "100 13px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.fillStyle = 'rgba(0,0,0,0.76)';
+
+  dateLabels.forEach((item) => {
+    const dx = item.point.x - centerX;
+    const dy = item.point.y - centerY;
+    const length = Math.max(Math.hypot(dx, dy), 1);
+    const extraX = item.label === '21 giugno' ? 78 : item.label === '21 dicembre' ? 38 : 26;
+    const extraY = item.label === '21 dicembre' ? 28 : 22;
+    const labelX = item.point.x + (dx / length) * extraX;
+    const labelY = item.point.y + (dy / length) * extraY;
+    oCtx.textAlign = dx >= 0 ? 'left' : 'right';
+    oCtx.fillText(item.label, labelX, labelY);
+  });
+
+  oCtx.beginPath();
+  oCtx.arc(centerX, centerY, 13, 0, Math.PI * 2);
+  oCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+  oCtx.lineWidth = 1;
+  oCtx.stroke();
+
+  oCtx.beginPath();
+  oCtx.arc(centerX, centerY, 2, 0, Math.PI * 2);
+  oCtx.fillStyle = 'rgba(0,0,0,0.62)';
+  oCtx.fill();
+
+  oCtx.beginPath();
+  oCtx.moveTo(centerX - 18, centerY);
+  oCtx.lineTo(centerX - 15, centerY);
+  oCtx.moveTo(centerX + 15, centerY);
+  oCtx.lineTo(centerX + 18, centerY);
+  oCtx.moveTo(centerX, centerY - 18);
+  oCtx.lineTo(centerX, centerY - 15);
+  oCtx.moveTo(centerX, centerY + 15);
+  oCtx.lineTo(centerX, centerY + 18);
+  oCtx.strokeStyle = 'rgba(0,0,0,0.32)';
+  oCtx.stroke();
+
+  oCtx.textAlign = 'center';
+  oCtx.font = "100 11px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.fillStyle = 'rgba(0,0,0,0.55)';
+  oCtx.fillText('Sole', centerX, centerY + 30);
+  oCtx.font = "100 34px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.textBaseline = 'middle';
+  oCtx.fillText('2028', viewWidth / 2, 43);
+  oCtx.restore();
 }
 
 function animate(ts) {
@@ -1311,9 +1757,16 @@ function animate(ts) {
     currentWaveAmp += (targetWaveAmp - currentWaveAmp) * orbitLerp;
     currentWaveFreq += (targetWaveFreq - currentWaveFreq) * orbitLerp;
 
-    if (!manualControl) {
-      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier;
+    const targetSlowdown = isHoveringCard ? 0.15 : 1.0;
+    currentHoverSlowdown += (targetSlowdown - currentHoverSlowdown) * 0.1;
+
+    if (!manualControl && currentView !== 'timeline') {
+      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier * currentHoverSlowdown;
       orbitProgress = autoOrbitProgress;
+    }
+    if (currentView === 'timeline') {
+      orbitProgress = 0;
+      currentTimelineRotation = 0;
     }
 
     drawOrbitTrace();
@@ -1325,38 +1778,33 @@ function animate(ts) {
       while (diff > Math.PI) diff -= Math.PI * 2;
       m.baseAngle += diff * baseLerp;
 
-      m.angle = m.baseAngle + orbitProgress * m.speed;
+      currentTimelineRotation = currentView === 'timeline' ? 0 : orbitProgress * 0.08;
+      m.angle = currentView === 'timeline'
+        ? m.baseAngle + currentTimelineRotation
+        : m.baseAngle + orbitProgress * m.speed;
       const rad = m.angle;
       const wave = Math.sin(rad * currentWaveFreq) * currentWaveAmp;
-      const x = Math.cos(rad) * (currentOrbitRadiusX + wave);
-      const y = Math.sin(rad) * (currentOrbitRadiusY + wave);
-
-      // Project from the tilted ring plane to screen
-      const tiltX = degToRad(currentTiltX); // Use current tilt
-      const tiltZ = degToRad(currentTiltZ); // Use current tilt
-
-      // 3D coords in ring plane: (x, 0, y)
-      // After rotateX(tiltX): (x, -z*sin + 0*cos, 0*sin + z*cos) = (x, -y*sin(tiltX), y*cos(tiltX))
-      const px = x;
-      const py = -y * Math.sin(tiltX);
-      const pz = y * Math.cos(tiltX);
-      
-      // After rotateZ(tiltZ):
-      const fx = px * Math.cos(tiltZ) - py * Math.sin(tiltZ);
-      const fy = px * Math.sin(tiltZ) + py * Math.cos(tiltZ);
-      const fz = pz;
-      
-      // Perspective
-      const persp = 900;
-      const scale = persp / (persp + fz);
-      const sx = fx * scale;
-      const sy = fy * scale;
+      const timelineOffset = currentView === 'timeline'
+        ? getTimelineOrbitOffset(currentTimelineRotation)
+        : { x: 0, y: 0 };
+      const sceneShift = currentView === 'timeline'
+        ? getTimelineSceneShift()
+        : { x: 0, y: 0 };
+      const point = projectOrbitPoint(
+        rad,
+        currentOrbitRadiusX + wave,
+        currentOrbitRadiusY + wave,
+        currentTiltX,
+        currentTiltZ,
+        timelineOffset.x + sceneShift.x,
+        timelineOffset.y + sceneShift.y
+      );
 
       m.wrap.style.transform =
-        `translate(${sx}px, ${sy}px) scale(${scale})`;
+        `translate(${point.x}px, ${point.y}px) scale(${point.scale})`;
 
       // Mantieni opacità piena e imposta z-index
-      m.wrap.style.zIndex = Math.round(1000 - fz);
+      m.wrap.style.zIndex = Math.round(1000 - point.z);
     });
   }
   requestAnimationFrame(animate);
@@ -1384,28 +1832,37 @@ async function init() {
       if (!r.ok) throw new Error(`Errore API: ${r.status}`);
       return r.json();
     });
-    modalProjects = rawData;
-    activeModalProjects = rawData;
     // Moltiplica i progetti fino a raggiungere 100 elementi in orbita
-    const data = Array.from({ length: 100 }, (_, i) => rawData[i % rawData.length]);
+    const data = Array.from({ length: 100 }, (_, i) => {
+      const source = rawData[i % rawData.length];
+      const timelineDate = makeTimelineDate(i, 100);
+
+      let title = source.titolo;
+      // Cambia la prima lettera in modo randomico solo per le copie (i >= numero progetti originali)
+      if (i >= rawData.length) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const randomChar = chars[Math.floor(Math.random() * chars.length)];
+        title = randomChar + "_" + title;
+      }
+
+      return {
+        ...source,
+        titolo: title,
+        _timelineIndex: i,
+        _timelineDate: timelineDate,
+        _timelineLabel: formatTimelineDate(timelineDate)
+      };
+    }).sort((a, b) => a._timelineDate - b._timelineDate);
+    modalProjects = data;
+    timelineProjects = data;
+    activeModalProjects = data;
     loaderBar.style.width = '100%';
-
-    // Funzione per pulire i tag e unificare i duplicati (2D, 3D, 3D program)
-    const cleanTag = (t) => {
-      const s = (t || "").trim();
-      if (s.toLowerCase() === "3d" || s.toLowerCase() === "3d program") return "3D";
-      if (s.toLowerCase() === "2d") return "2D";
-      return s;
-    };
-
-    const itemTagKeys = (item) => (item.tags || []).map(t => normalizeTagKey(cleanTag(t)));
 
     const uniqueTags = [...new Set(data.flatMap(item => (item.tags || []).map(cleanTag)))]
       .filter(t => t.length > 0)
       .sort((a, b) => a.localeCompare(b));
 
     const filtersContainer = document.getElementById('filters-wrap');
-    let currentFilter = 'all';
     let showAllTags = false;
     
     const renderFilters = () => {
@@ -1415,7 +1872,7 @@ async function init() {
       const tagCounts = {};
       uniqueTags.forEach(tag => {
         const tagKey = normalizeTagKey(tag);
-        tagCounts[tag] = rawData.filter(item => itemTagKeys(item).includes(tagKey)).length;
+        tagCounts[tag] = data.filter(item => itemTagKeys(item).includes(tagKey)).length;
       });
 
       // Filtra i tag: se non showAllTags, mostra solo quelli con almeno 2 occorrenze
@@ -1440,38 +1897,25 @@ async function init() {
         btn.className = 'filter-btn' + (tag === currentFilter ? ' active' : '');
         
         const tagLabel = tag === 'all' ? 'NASA70' : formatText(tag);
-        btn.textContent = tag === 'all' ? `${tagLabel} [${count}]` : `${tagLabel} [${count}]`;
+        const countEl = document.createElement('span');
+        countEl.className = 'filter-count';
+        countEl.textContent = count;
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'filter-label';
+        labelEl.textContent = tagLabel;
+
+        btn.appendChild(countEl);
+        btn.appendChild(labelEl);
         
         btn.onclick = (e) => {
           e.stopPropagation();
           currentFilter = tag;
-          const targetTag = tag === 'all' ? null : normalizeTagKey(tag);
-          activeModalProjects = targetTag
-            ? rawData.filter(item => itemTagKeys(item).includes(targetTag))
-            : rawData;
-
-          // Get the orbit config for the current tag, with a generated fallback for new API tags
-          const config = getOrbitConfig(tag);
-
-          // Update global orbit parameters
-          targetOrbitRadiusX = config.orbitRadiusX;
-          targetOrbitRadiusY = config.orbitRadiusY;
-          targetTiltX = config.tiltX;
-          targetTiltZ = config.tiltZ;
-          targetOrbitSpeedMultiplier = config.orbitSpeedMultiplier;
-          targetWaveAmp = config.waveAmp || 0;
-          targetWaveFreq = config.waveFreq || 0;
-
-          // Filtra i meteoriti visibili e ricalcola le posizioni per renderli equi-distanti nell'orbita
-          const visibleMeteorites = meteorites.filter(m => {
-            const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
-            m.wrap.style.display = isVisible ? 'block' : 'none';
-            return isVisible;
-          });
-
-          visibleMeteorites.forEach((m, idx) => {
-            m.targetBaseAngle = (idx / visibleMeteorites.length) * Math.PI * 2;
-          });
+          if (currentView === 'timeline') {
+            applyTimelineLayout();
+          } else {
+            applyTagsFilter(tag);
+          }
           renderFilters();
         };
         filtersContainer.appendChild(btn);
@@ -1500,6 +1944,8 @@ async function init() {
       scene.appendChild(wrap);
       meteorites.push({ wrap, inner, title, author, baseAngle, targetBaseAngle: baseAngle, angle: baseAngle, speed, data: item });
     });
+
+    applyTagsFilter('all');
 
     setTimeout(() => {
       loader.classList.add('hidden');
