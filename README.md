@@ -23,10 +23,10 @@ L'obiettivo è rendere la consultazione accessibile, ma allo stesso tempo coeren
 ## Processo Creativo e Schizzi
 Il progetto è nato dalla volontà di trasformare un semplice elenco in un'esperienza immersiva. I primi schizzi si sono concentrati sulla meccanica dell'orbita: come tradurre i dati dei progetti in variabili matematiche (raggio, inclinazione e velocità) per creare un sistema che sembrasse vivo e dinamico.
 
-![Schizzo 1 - Concetto di Orbita](p2/schizzo_01.jpg)
+![Schizzo 1 - Concetto di Orbita](p2/schizzo_01.jpeg)
 *Studio iniziale delle traiettorie ellittiche: definizione della prospettiva 3D e della gerarchia visiva tra il nucleo centrale e i progetti orbitanti.*
 
-![Schizzo 2 - Layout e Navigazione](p2/schizzo_03.jpg)
+![Schizzo 2 - Layout e Navigazione](p2/schizzo_03.jpeg)
 *Progettazione dell'interfaccia: studio del posizionamento dei filtri laterali e della transizione verso la modalità Timeline per garantire un'usabilità chiara.*
 
 ## Interfaccia e Schermate
@@ -35,7 +35,7 @@ L'esperienza utente si articola in tre momenti principali, ognuno con una funzio
 ![Schermata 1 - Visualizzazione Orbitale](p2/screen_01.png)
 
 
-![Schermata 2 - Visualizzazione Timeline](p2/screen_03.png.png)
+![Schermata 2 - Visualizzazione Timeline](p2/screen_03.png)
 
 
 ![Schermata 3 - Dettaglio Progetto](p2/screen_02.png)
