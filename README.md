@@ -23,20 +23,19 @@ L'obiettivo è rendere la consultazione accessibile, ma allo stesso tempo coeren
 ## Processo Creativo e Schizzi
 Il progetto è nato dalla volontà di trasformare un semplice elenco in un'esperienza immersiva. I primi schizzi si sono concentrati sulla meccanica dell'orbita: come tradurre i dati dei progetti in variabili matematiche (raggio, inclinazione e velocità) per creare un sistema che sembrasse vivo e dinamico.
 
-![Schizzo 1 - Concetto di Orbita](p2/schizzo_1.jpg)
+![Schizzo 1 - Concetto di Orbita](p2/schizzo_01.jpg)
 *Studio iniziale delle traiettorie ellittiche: definizione della prospettiva 3D e della gerarchia visiva tra il nucleo centrale e i progetti orbitanti.*
 
-![Schizzo 2 - Layout e Navigazione](p2/schizzo_2.jpg)
+![Schizzo 2 - Layout e Navigazione](p2/schizzo_03.jpg)
 *Progettazione dell'interfaccia: studio del posizionamento dei filtri laterali e della transizione verso la modalità Timeline per garantire un'usabilità chiara.*
 
 ## Interfaccia e Schermate
 L'esperienza utente si articola in tre momenti principali, ognuno con una funzione specifica nella navigazione dell'archivio.
 
-![Schermata 1 - Visualizzazione Orbitale](p2/screen_orbita.jpg)
-**1. Visualizzazione Orbitale (A-Z):** La vista principale dove i progetti ruotano in uno spazio 3D. Selezionando i filtri a sinistra, le orbite cambiano forma e inclinazione per adattarsi al tema scelto.
+![Schermata 1 - Visualizzazione Orbitale](p2/screen_01.png)
 
-![Schermata 2 - Visualizzazione Timeline](p2/screen_timeline.jpg)
-**2. Visualizzazione Timeline:** Una modalità più tecnica e ordinata che dispone i progetti lungo un asse temporale circolare per l'anno 2028, permettendo di consultare la cronologia dei lavori.
 
-![Schermata 3 - Dettaglio Progetto](p2/screen_modale.jpg)
-**3. Scheda Dettaglio:** Cliccando su un progetto si apre una modale che offre una descrizione approfondita, i tag correlati e la possibilità di visitare il sito del progetto esterno.
+![Schermata 2 - Visualizzazione Timeline](p2/screen_03.png.png)
+
+
+![Schermata 3 - Dettaglio Progetto](p2/screen_02.png)
