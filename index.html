@@ -98,14 +98,57 @@
       z-index: 0;
     }
 
-    #top-left-logo {
+    #top-left-logo-wrap {
       position: fixed;
-      top: clamp(10px, 1.1vw, 22px);
+      top: clamp(15px, 2vw, 40px);
       right: clamp(22px, 2vw, 48px);
       width: clamp(150px, 11vw, 230px);
-      height: auto;
+      aspect-ratio: 1030 / 319;
       z-index: 1200;
+      line-height: 0;
+      display: block;
+      cursor: pointer;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      appearance: none;
+    }
+
+    #top-left-logo-wrap img,
+    #top-left-logo-wrap video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #top-left-logo-static,
+    #top-left-logo-animated {
+      position: absolute;
+      inset: 0;
+      transition: opacity 180ms ease;
+    }
+
+    #top-left-logo-static {
+      opacity: 1;
+    }
+
+    #top-left-logo-animated {
+      opacity: 0;
       pointer-events: none;
+      inset: auto;
+      top: 9px;
+      left: 50%;
+      width: 100%;
+      height: auto;
+      transform: translateX(-49%);
+    }
+
+    #top-left-logo-wrap.is-animated #top-left-logo-static {
+      opacity: 0;
+    }
+
+    #top-left-logo-wrap.is-animated #top-left-logo-animated {
+      opacity: 1;
     }
 
     #view-toggle {
@@ -680,7 +723,10 @@
 </head>
 <body>
 <div id="custom-cursor" aria-hidden="true"></div>
-<img src="p2/logo.png" alt="NASA" id="top-left-logo">
+<button id="top-left-logo-wrap" type="button" aria-label="NASA">
+  <img src="p2/logo.png" alt="NASA" id="top-left-logo-static">
+  <img src="p2/Composizione 1.gif" alt="" id="top-left-logo-animated" aria-hidden="true">
+</button>
 
 <nav id="view-toggle" aria-label="Cambia visualizzazione">
   <button class="view-btn active" type="button" data-view="tags">A-Z</button>
@@ -689,9 +735,7 @@
 
 <!-- LOADER -->
 <div id="loader">
-  <video class="loader-video" autoplay loop muted playsinline>
-    <source src="p2/logo_animato.mp4" type="video/mp4">
-  </video>
+  <img class="loader-video" src="p2/Composizione 1.gif" alt="Caricamento">
   <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
   <div class="loader-text">Caricamento progetti in orbita…</div>
 </div>
@@ -756,6 +800,27 @@
   document.addEventListener('mouseenter', () => {
     cursor.style.opacity = '1';
   });
+})();
+
+// ---- TOP LEFT LOGO ----
+(function() {
+  const logoWrap = document.getElementById('top-left-logo-wrap');
+  const logoAnimated = document.getElementById('top-left-logo-animated');
+
+  if (!logoWrap || !logoAnimated) return;
+
+  const playLogo = () => {
+    logoWrap.classList.add('is-animated');
+  };
+
+  const stopLogo = () => {
+    logoWrap.classList.remove('is-animated');
+  };
+
+  logoWrap.addEventListener('mouseenter', playLogo);
+  logoWrap.addEventListener('focus', playLogo);
+  logoWrap.addEventListener('mouseleave', stopLogo);
+  logoWrap.addEventListener('blur', stopLogo);
 })();
 
 // ---- STARFIELD ----
@@ -1814,7 +1879,7 @@ async function init() {
   try {
     // Velocizza la riproduzione del video del loader
     const loaderVideo = document.querySelector('.loader-video');
-    if (loaderVideo) {
+    if (loaderVideo instanceof HTMLVideoElement) {
       loaderVideo.playbackRate = 3;
     }
     
