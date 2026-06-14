@@ -75,7 +75,7 @@ Per il logo ho scelto di seguire il manuale grafico della NASA del 1976, in cui 
 Per l'animazione, invece, ho pensato a una sorta di countdown al contrario, ovvero un count-up che va da 0 a 70, a rappresentare i 70 anni di attività della NASA.
 
 ![logo statico](p2/logo.png)
-![logo animato](p2/Logo_animation.gif)
+![logo animato](p2/Logo_animato.gif)
 
 ## Target
 Il progetto è pensato principalmente per studenti, docenti e visitatori interessati a scoprire i lavori realizzati per NASA70. Il target include persone che vogliono esplorare i progetti in modo rapido, ma anche utenti curiosi che preferiscono un'esperienza più immersiva e visiva rispetto a un archivio tradizionale.
