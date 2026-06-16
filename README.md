@@ -45,7 +45,9 @@ L'esperienza utente si articola in tre momenti principali, ognuno con una funzio
 
 
 https://github.com/user-attachments/assets/2d2ed76d-7fe2-4432-98f8-29d80f78015b
-ps. il video é velocizzato e tagliato
+
+
+(ps. il video é velocizzato e tagliato)
 
 
 ## Tecnologia usata
