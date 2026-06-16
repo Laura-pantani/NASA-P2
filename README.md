@@ -42,6 +42,14 @@ L'esperienza utente si articola in tre momenti principali, ognuno con una funzio
 
 ![Schermata 3 - Dettaglio Progetto](p2/screen_02.png)
 
+
+
+https://github.com/user-attachments/assets/2d2ed76d-7fe2-4432-98f8-29d80f78015b
+
+
+(ps. il video é velocizzato e tagliato)
+
+
 ## Tecnologia usata
 Il progetto è stato sviluppato utilizzando le tecnologie web standard per creare un'esperienza interattiva fluida e immersiva. La struttura portante è realizzata in **HTML5**, mentre lo stile e le transizioni visive sono gestite tramite **CSS3**. La logica di interazione, il filtraggio dinamico e la gestione dei dati sono scritti in **JavaScript (ES6)**. Per la visualizzazione delle orbite e degli elementi nello spazio, viene utilizzato il **Canvas 2D** per il tracciamento delle rotte e una logica di proiezione prospettica applicata al DOM per le card. Tutti i contenuti e i metadati dei progetti sono caricati dinamicamente da un file **JSON**.
 
