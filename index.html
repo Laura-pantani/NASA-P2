@@ -326,22 +326,22 @@
     }
 
     .home-projects-btn {
-      width: fit-content;
+      width: min(100%, clamp(220px, 24vw, 360px));
+      flex: 0 0 auto;
       margin-top: 26px;
-      padding: 0 0 4px;
+      padding: 16px 20px;
       border: 0;
-      border-bottom: 1px solid currentColor;
-      background: transparent;
-      color: #000;
       cursor: pointer;
-      font: inherit;
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
       transition: transform 0.2s ease;
     }
 
-    .home-projects-btn:hover {
+    body.info-view .home-projects-btn {
+      background: #000;
+      color: #fff;
+    }
+
+    body.info-view .home-projects-btn:hover {
+      background: #333;
       transform: translateX(4px);
     }
 
@@ -410,11 +410,7 @@
       width: 100%;
       text-align: left;
       font: inherit;
-      cursor: pointer;
-    }
-
-    .info-project:hover .info-project-title {
-      text-decoration: underline;
+      cursor: default;
     }
 
     .info-project-thumb {
@@ -448,12 +444,37 @@
       max-width: 62ch;
     }
 
+    .info-project-actions {
+      display: flex;
+      margin-top: auto;
+    }
+
+    .info-project .info-project-link {
+      flex: 0 0 auto;
+      width: fit-content;
+      padding: 12px 18px;
+      background: #000;
+      color: #fff;
+    }
+
+    .info-project .info-project-link:hover {
+      background: #333;
+    }
+
     .info-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       justify-content: flex-start;
       padding-top: 4px;
+    }
+
+    .info-project-aside {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 18px;
     }
 
     .info-tag {
@@ -504,6 +525,10 @@
 
       .info-tags {
         justify-content: flex-start;
+        grid-column: 2;
+      }
+
+      .info-project-aside {
         grid-column: 2;
       }
     }
@@ -1115,7 +1140,7 @@
           <p class="info-subtitle">
             The collection includes projects about space, the Moon, satellites, planetary systems, scientific data, NASA audio, visualisation, and interactive learning.
           </p>
-          <button class="home-projects-btn" id="home-projects-btn" type="button">Explore projects</button>
+          <button class="home-projects-btn btn-primary" id="home-projects-btn" type="button">Explore projects ↗</button>
         </div>
 
         <section>
@@ -1754,8 +1779,7 @@ function renderProjectList(items) {
 
   projectList.innerHTML = '';
   [...items].sort(compareProjectsAZ).forEach((item) => {
-    const card = document.createElement('button');
-    card.type = 'button';
+    const card = document.createElement('article');
     card.className = 'info-project';
 
     const thumb = document.createElement('img');
@@ -1779,6 +1803,17 @@ function renderProjectList(items) {
     desc.className = 'info-project-desc';
     desc.textContent = item.descrizione || '';
 
+    const actions = document.createElement('div');
+    actions.className = 'info-project-actions';
+
+    const link = document.createElement('a');
+    link.className = 'btn-primary info-project-link';
+    link.href = item.url || '#';
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Visit project ↗';
+
+    actions.appendChild(link);
     body.appendChild(title);
     body.appendChild(meta);
     body.appendChild(desc);
@@ -1792,10 +1827,14 @@ function renderProjectList(items) {
       tags.appendChild(tagEl);
     });
 
+    const aside = document.createElement('div');
+    aside.className = 'info-project-aside';
+    aside.appendChild(tags);
+    aside.appendChild(actions);
+
     card.appendChild(thumb);
     card.appendChild(body);
-    card.appendChild(tags);
-    card.addEventListener('click', () => openModal(item));
+    card.appendChild(aside);
     projectList.appendChild(card);
   });
 }
