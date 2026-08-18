@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NASA70 — Progetti Studenti</title>
+  <title>NASA70 — Student Projects</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,67 +14,21 @@
       --text-dim: #555555;
       --card-bg: rgba(255,255,255,0.95);
       --font-main: 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue LT Std', 'Helvetica Neue Std', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --content-gutter: clamp(22px, 3.5vw, 60px);
+      --content-left-margin: max(var(--content-gutter), calc(50vw - 660px));
+      --logo-width: clamp(150px, 11vw, 230px);
+      --logo-right-margin: max(12px, calc(var(--content-left-margin) - 12px));
     }
 
     html, body {
       width: 100%; height: 100%;
-      background: #f4f4f4;
+      background: #fff;
       color: #000;
       font-family: var(--font-main);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
       overflow: hidden;
-      cursor: none;
-    }
-
-    a, button, input, .meteorite-inner {
-      cursor: none;
-    }
-
-    #custom-cursor {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 25px;
-      height: 30px;
-      border: 7px solid rgba(0, 0, 0, 0.75);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      z-index: 3000;
-      mix-blend-mode: difference;
-    }
-
-    #custom-cursor::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 4px;
-      height: 4px;
-      background: #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    #custom-cursor.is-hovering {
-      width: 42px;
-      height: 42px;
-      border-color: rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    @media (pointer: coarse) {
-      html, body,
-      a, button, input, .meteorite-inner {
-        cursor: auto;
-      }
-
-      #custom-cursor {
-        display: none;
-      }
     }
 
     /* ---- STARS ---- */
@@ -82,6 +36,8 @@
       position: fixed; inset: 0; z-index: 0;
       pointer-events: none;
     }
+
+    body.info-view #starfield { opacity: 0.35; }
 
     /* ---- SCENE ---- */
     #scene {
@@ -101,8 +57,8 @@
     #top-left-logo-wrap {
       position: fixed;
       top: clamp(15px, 2vw, 40px);
-      right: clamp(22px, 2vw, 48px);
-      width: clamp(150px, 11vw, 230px);
+      right: var(--logo-right-margin);
+      width: var(--logo-width);
       aspect-ratio: 1030 / 319;
       z-index: 1200;
       line-height: 0;
@@ -154,10 +110,10 @@
     #view-toggle {
       position: fixed;
       top: clamp(24px, 2.8vw, 54px);
-      left: clamp(28px, 2.65vw, 64px);
+      left: var(--content-left-margin);
       z-index: 1300;
       display: flex;
-      gap: clamp(14px, 1.2vw, 26px);
+      gap: clamp(16px, 1.3vw, 28px);
       align-items: center;
     }
 
@@ -168,14 +124,52 @@
       color: #000;
       font-family: var(--font-main);
       font-size: clamp(13px, 0.95vw, 18px);
-      font-weight: 100;
+      font-weight: 300;
       letter-spacing: 0.03em;
       line-height: 1.2;
       padding: 0 0 5px;
       border-radius: 0;
-      cursor: none;
+      opacity: 1;
+      transition: opacity 0.2s, font-weight 0.2s;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      right: calc(var(--content-gutter) - 16px);
+      top: calc(clamp(15px, 3vw, 40px) + 3px);
+      z-index: 1300;
+      width: 24px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: none;
+      color: #000;
+      font-family: var(--font-main);
+      padding: 0 0 5px;
+      border-radius: 0;
       opacity: 0.62;
       transition: opacity 0.2s, font-weight 0.2s;
+    }
+
+    .theme-toggle svg {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.7;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-toggle[aria-pressed="false"] .theme-icon-moon,
+    .theme-toggle[aria-pressed="true"] .theme-icon-sun {
+      opacity: 1;
     }
 
     .view-btn::after {
@@ -193,13 +187,274 @@
 
     .view-btn:hover,
     .view-btn.active {
+      font-weight: 300;
+      text-shadow: 0 0 0.25px currentColor;
+    }
+
+    .theme-toggle:hover,
+    .theme-toggle[aria-pressed="true"] {
       opacity: 1;
-      font-weight: 700;
     }
 
     .view-btn:hover::after,
     .view-btn.active::after {
       transform: scaleX(1);
+    }
+
+    body.info-view {
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    body.theme-dark {
+      background: #000;
+    }
+
+    body.theme-dark > * {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    body.theme-dark img,
+    body.theme-dark video {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    body.theme-dark #top-left-logo-wrap img,
+    body.theme-dark #top-left-logo-wrap video {
+      filter: none;
+    }
+
+    body.theme-dark.info-view::before {
+      background: linear-gradient(to bottom, #000 0%, #000 58%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    body.info-view::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: clamp(88px, 11vw, 128px);
+      background: linear-gradient(to bottom, #fff 0%, #fff 58%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    body.info-view #filters-container,
+    body.info-view #hint,
+    body.info-view #scene {
+      display: none;
+    }
+
+    body.info-view #view-toggle {
+      z-index: 2100;
+    }
+
+    body.info-view #top-left-logo-wrap {
+      z-index: 2101;
+    }
+
+    body.info-view .theme-toggle {
+      z-index: 2102;
+    }
+
+    body.info-view #info-page {
+      display: block;
+    }
+
+    /* ---- INFO PAGE ---- */
+    #info-page {
+      display: none;
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      padding: clamp(96px, 12vh, 140px) var(--content-gutter) clamp(40px, 6vw, 72px);
+    }
+
+    .info-page-inner {
+      width: min(1320px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: clamp(28px, 4vw, 52px);
+    }
+
+    .info-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .info-kicker {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.52);
+    }
+
+    .info-shell {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(28px, 4vw, 52px);
+      align-items: start;
+    }
+
+    .info-main {
+      display: grid;
+      gap: 28px;
+    }
+
+    .info-title {
+      font-size: clamp(42px, 6vw, 88px);
+      line-height: 0.9;
+      font-weight: 600;
+      color: #000;
+      max-width: 12ch;
+      margin: 0;
+    }
+
+    .info-subtitle {
+      font-size: clamp(15px, 1.15vw, 18px);
+      line-height: 1.7;
+      color: #222;
+      max-width: 72ch;
+      margin-top: 18px;
+    }
+
+    .info-lead {
+      font-size: clamp(15px, 1.15vw, 18px);
+      line-height: 1.7;
+      color: #222;
+      max-width: 62ch;
+      margin: 0;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.54);
+      margin-bottom: 8px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .info-card {
+      padding: 18px 18px 18px 0;
+      border-right: 1px solid rgba(0, 0, 0, 0.12);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .info-card h3 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 8px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .info-card p {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #222;
+    }
+
+    .info-featured-list {
+      display: grid;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .info-project {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      text-decoration: none;
+      color: inherit;
+      background: transparent;
+      border-left: 0;
+      border-right: 0;
+      border-top: 0;
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .info-project:hover .info-project-title {
+      text-decoration: underline;
+    }
+
+    .info-project-thumb {
+      width: 120px;
+      height: 78px;
+      object-fit: cover;
+      display: block;
+      background: rgba(0,0,0,0.04);
+    }
+
+    .info-project-title {
+      font-size: clamp(18px, 1.6vw, 28px);
+      line-height: 1.05;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #000;
+    }
+
+    .info-project-meta {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(0,0,0,0.55);
+      margin-bottom: 8px;
+    }
+
+    .info-project-desc {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #222;
+      max-width: 62ch;
+    }
+
+    .info-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-start;
+      padding-top: 4px;
+    }
+
+    .info-tag {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: rgba(0,0,0,0.7);
+      border-bottom: 1px solid rgba(0,0,0,0.25);
+      padding-bottom: 2px;
+    }
+
+    @media (max-width: 900px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-project {
+        grid-template-columns: 88px minmax(0, 1fr);
+      }
+
+      .info-tags {
+        justify-content: flex-start;
+        grid-column: 2;
+      }
     }
 
     @keyframes fade-in { to { opacity: 1; } }
@@ -313,7 +568,8 @@
     }
 
     body.modal-open #filters-container,
-    body.modal-open #view-toggle {
+    body.modal-open #view-toggle,
+    body.modal-open .theme-toggle {
       display: none;
     }
 
@@ -374,15 +630,15 @@
 
     #modal {
       background: var(--card-bg);
-      border: none;
+      border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: 0;
-      max-width: 520px;
+      max-width: 560px;
       width: 100%;
-      height: min(780px, 88vh);
+      height: min(820px, 90vh);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.12);
       position: relative;
       flex: 0 0 auto;
       z-index: 2;
@@ -402,7 +658,6 @@
       font-size: 18px;
       font-weight: 100;
       line-height: 1;
-      cursor: none;
       transition: background 0.2s, opacity 0.2s;
     }
 
@@ -523,8 +778,8 @@
 
     #modal-img {
       width: 100%; 
-      height: 280px;
-      flex: 0 0 280px;
+      height: 260px;
+      flex: 0 0 260px;
       object-fit: cover;
       display: block;
       background: #000;
@@ -534,53 +789,68 @@
       flex: 1 1 auto;
       min-height: 0;
       overflow-y: auto;
-      padding: 24px 28px 28px;
+      padding: 22px 28px 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #modal-kicker {
+      margin-bottom: 8px;
     }
 
     #modal-title {
       font-family: var(--font-main);
-      font-size: 24px;
+      font-size: clamp(22px, 2vw, 28px);
       font-weight: 600;
       color: #000;
-      margin-bottom: 8px;
-      line-height: 2;
+      margin-bottom: 10px;
+      line-height: 1.08;
       text-align: left;
+    }
+
+    #modal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      align-items: baseline;
+      margin-bottom: 18px;
     }
 
     #modal-author {
       font-family: var(--font-main);
       font-weight: 400;
-      font-size: 15px;
-      color: #333;
-      margin-bottom: 22px;
+      font-size: 13px;
+      color: #111;
+      margin-bottom: 0;
     }
 
     #modal-date {
       font-size: 9px;
-      color: #ccc;
+      color: rgba(0, 0, 0, 0.52);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 24px;
+      margin-bottom: 0;
       display: block;
     }
 
     #modal-desc {
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.6;
-      color: #333;
-      margin-bottom: 32px;
+      color: #262626;
+      margin-bottom: 24px;
       font-weight: 300;
+      max-width: 56ch;
     }
 
     #modal-tags {
       display: flex; flex-wrap: wrap; gap: 6px;
-      margin-bottom: 40px;
+      margin-bottom: 28px;
     }
 
     .tag {
       background: transparent;
-      border: 1px solid #eee;
-      color: #999;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.6);
       font-size: 8px;
       letter-spacing: 0.1em;
       padding: 4px 10px;
@@ -680,13 +950,17 @@
     /* ---- FILTERS ---- */
     #filters-container {
       position: fixed;
-      left: clamp(28px, 2.65vw, 64px);
-      top: clamp(185px, 20vh, 280px);
+      left: var(--content-left-margin);
+      top: clamp(250px, 27vh, 360px);
       z-index: 1100;
       display: flex;
       flex-direction: column;
       gap: clamp(10px, 0.9vw, 18px);
-      max-height: calc(100vh - clamp(230px, 25vh, 330px));
+      bottom: 28px;
+    }
+
+    #filters-all {
+      flex: 0 0 auto;
     }
 
     #filters-wrap {
@@ -699,11 +973,6 @@
       padding: 0;
       overflow-y: auto;
       scrollbar-width: none; /* Firefox */
-    }
-
-    #filters-toggle {
-      flex: 0 0 auto;
-      padding-top: 2px;
     }
 
     #filters-wrap::-webkit-scrollbar { display: none; } /* Chrome/Safari */
@@ -721,15 +990,9 @@
       gap: 12px;
       align-items: baseline;
       text-align: left;
-      cursor: none;
       letter-spacing: 0.03em;
       transition: all 0.3s ease;
       opacity: 0.8;
-    }
-
-    .filter-btn.filter-toggle {
-      white-space: nowrap;
-      width: max-content;
     }
 
     .filter-count {
@@ -752,23 +1015,28 @@
 
   </style>
 </head>
-<body>
-<div id="custom-cursor" aria-hidden="true"></div>
+<body class="theme-dark">
 <button id="top-left-logo-wrap" type="button" aria-label="NASA">
   <img src="p2/logo.png" alt="NASA" id="top-left-logo-static">
   <img src="p2/Composizione 1.gif" alt="" id="top-left-logo-animated" aria-hidden="true">
 </button>
 
-<nav id="view-toggle" aria-label="Cambia visualizzazione">
-  <button class="view-btn active" type="button" data-view="tags">A-Z</button>
+<nav id="view-toggle" aria-label="Change view">
+  <button class="view-btn info-btn active" type="button" data-view="info">Home page</button>
+  <button class="view-btn" type="button" data-view="tags">Projects</button>
   <button class="view-btn" type="button" data-view="timeline">Timeline</button>
 </nav>
 
+<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="true" title="Switch to light mode">
+  <svg class="theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z" /></svg>
+  <svg class="theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
+</button>
+
 <!-- LOADER -->
 <div id="loader">
-  <img class="loader-video" src="p2/Composizione 1.gif" alt="Caricamento">
+  <img class="loader-video" src="p2/Composizione 1.gif" alt="Loading">
   <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
-  <div class="loader-text">Caricamento progetti in orbita…</div>
+  <div class="loader-text">Loading projects into orbit…</div>
 </div>
 
 <!-- STARS -->
@@ -782,58 +1050,75 @@
 
 <!-- FILTERS -->
 <div id="filters-container">
+  <div id="filters-all"></div>
   <div id="filters-wrap"></div>
-  <div id="filters-toggle"></div>
 </div>
 
+<section id="info-page" aria-hidden="true">
+  <div class="info-page-inner">
+    <div class="info-topline">
+          <div class="info-kicker">NASA70 / 2028 anniversary</div>
+    </div>
+
+    <div class="info-shell">
+      <div class="info-main">
+        <div>
+          <div class="info-title">NASA’s 70<sup>th</sup> anniversary.</div>
+          <p class="info-lead">
+            These projects were created for NASA’s 2028 anniversary year.
+            NASA70 brings them together in a project archive that explores missions and stories from NASA’s history. This site offers a way to discover NASA’s contribution to space and the planet more deeply,
+            present the work, identify recurring themes, and choose where to begin exploring.
+          </p>
+          <p class="info-subtitle">
+            The collection includes projects about space, the Moon, satellites, planetary systems, scientific data, NASA audio, visualisation, and interactive learning.
+          </p>
+        </div>
+
+        <section>
+          <div class="section-label">Recurring themes</div>
+          <div class="info-tags" id="info-tag-cloud"></div>
+        </section>
+
+        <section>
+          <div class="section-label">Featured projects</div>
+          <div class="info-featured-list" id="info-featured-list"></div>
+        </section>
+
+      
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- HINT -->
-<div id="hint">clicca ovunque, e trascina</div>
+<div id="hint">drag the scene to rotate the orbit</div>
 
 <!-- MODAL -->
 <div id="modal-overlay" role="dialog" aria-modal="true">
   <div id="modal-gallery">
-    <div id="modal-related-left" class="modal-related" aria-label="Progetti precedenti"></div>
+    <div id="modal-related-left" class="modal-related" aria-label="Previous projects"></div>
     <div id="modal">
-      <button class="modal-x" id="modal-close" type="button" aria-label="Chiudi">×</button>
+      <button class="modal-x" id="modal-close" type="button" aria-label="Close">×</button>
       <img id="modal-img" src="" alt="">
       <div id="modal-body">
+        <div id="modal-kicker">Project details</div>
         <div id="modal-title"></div>
-        <div id="modal-author"></div>
-        <div id="modal-date"></div>
+        <div id="modal-meta">
+          <div id="modal-author"></div>
+          <div id="modal-date"></div>
+        </div>
         <div id="modal-desc"></div>
         <div id="modal-tags"></div>
         <div id="modal-actions">
-          <a id="modal-link" class="btn-primary" href="#" target="_blank" rel="noopener">Visita il progetto ↗</a>
+          <a id="modal-link" class="btn-primary" href="#" target="_blank" rel="noopener">Visit project ↗</a>
         </div>
       </div>
     </div>
-    <div id="modal-related-right" class="modal-related" aria-label="Progetti successivi"></div>
+    <div id="modal-related-right" class="modal-related" aria-label="Next projects"></div>
   </div>
 </div>
 
 <script>
-// ---- CUSTOM CURSOR ----
-(function() {
-  const cursor = document.getElementById('custom-cursor');
-  const hoverSelector = 'a, button, input, .meteorite-inner, .related-card, .tag, .view-btn';
-
-  if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
-
-  document.addEventListener('mousemove', (e) => {
-    cursor.style.left = `${e.clientX}px`;
-    cursor.style.top = `${e.clientY}px`;
-    cursor.classList.toggle('is-hovering', Boolean(e.target.closest(hoverSelector)));
-  });
-
-  document.addEventListener('mouseleave', () => {
-    cursor.style.opacity = '0';
-  });
-
-  document.addEventListener('mouseenter', () => {
-    cursor.style.opacity = '1';
-  });
-})();
-
 // ---- TOP LEFT LOGO ----
 (function() {
   const logoWrap = document.getElementById('top-left-logo-wrap');
@@ -950,8 +1235,29 @@ const overlay = document.getElementById('modal-overlay');
 const loaderBar = document.getElementById('loader-bar');
 const loader = document.getElementById('loader');
 const hint = document.getElementById('hint');
+const infoPage = document.getElementById('info-page');
+const infoFeaturedList = document.getElementById('info-featured-list');
+const infoTagCloud = document.getElementById('info-tag-cloud');
 const modalImage = document.getElementById('modal-img');
 modalImage.onerror = () => { usePlaceholderImage(modalImage); };
+
+function isInfoOpen() {
+  return document.body.classList.contains('info-view');
+}
+
+function closeInfoPage() {
+  if (!infoPage) return;
+  infoPage.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('info-view');
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+}
+
+function openInfoPage() {
+  if (!infoPage) return;
+  infoPage.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('info-view');
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+}
 
 function resizeOrbitCanvas() {
   if (!orbitCanvas) return;
@@ -979,7 +1285,7 @@ let lastTouchTime = 0;
 let isHoveringCard = false;
 let currentHoverSlowdown = 1.0;
 
-// Global variables for current orbit state, will be updated by tag selection
+// Global variables for the main orbit state
 let currentOrbitRadiusX = 300;
 let currentOrbitRadiusY = 200;
 let currentTiltX = 80;
@@ -989,7 +1295,7 @@ let currentWaveAmp = 0;
 let currentWaveFreq = 0;
 let modalProjects = [];
 let currentView = 'tags';
-let currentFilter = 'all';
+let currentFilters = new Set();
 let timelineProjects = [];
 let currentTimelineRotation = 0;
 
@@ -1003,6 +1309,9 @@ let targetWaveFreq = 0;
 
 let activeModalProjects = [];
 let currentModalItem = null;
+let isDraggingOrbit = false;
+let dragStartY = 0;
+let dragStartOrbit = 0;
 
 
 // We'll spread meteorites evenly around the ring
@@ -1022,7 +1331,7 @@ function dayOfYear(date) {
 }
 
 function formatTimelineDate(date) {
-  return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 function makeTimelineDate(index, total) {
@@ -1120,7 +1429,7 @@ function enableManualOrbit() {
   if (!manualControl) {
     manualControl = true;
     orbitProgress = autoOrbitProgress;
-    hint.textContent = "clicca ovunque, e trascina";
+    hint.textContent = "drag the scene to rotate the orbit";
   }
 }
 
@@ -1129,7 +1438,7 @@ function toggleOrbitMode() {
   if (manualControl) {
     autoOrbitProgress = orbitProgress;
     manualControl = false;
-    hint.textContent = "clicca ovunque, e trascina";
+    hint.textContent = "drag the scene to rotate the orbit";
   } else {
     enableManualOrbit();
   }
@@ -1377,10 +1686,9 @@ function createOrbitConfigForTag(tag) {
   };
 }
 
-function getOrbitConfig(tag) {
-  const key = normalizeTagKey(tag);
-  if (!key || key === 'all') return tagOrbitConfigs.all;
-  return visibleTagOrbitConfigs[key] || tagOrbitConfigs[key] || createOrbitConfigForTag(key);
+// Every tag selection keeps the same main orbit.
+function getOrbitConfig() {
+  return tagOrbitConfigs.all;
 }
 
 // Helper per formattare il testo: Prima maiuscola, resto minuscolo (esclude NASA70)
@@ -1388,6 +1696,71 @@ function formatText(str) {
   if (!str) return "";
   if (str.toUpperCase() === "NASA70") return "NASA70";
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function renderInfoPageHome(items) {
+  if (!infoFeaturedList || !infoTagCloud) return;
+
+  const featured = [...items].sort(compareProjectsAZ).slice(0, 6);
+  infoFeaturedList.innerHTML = '';
+  infoTagCloud.innerHTML = '';
+
+  featured.forEach((item) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'info-project';
+
+    const thumb = document.createElement('img');
+    thumb.className = 'info-project-thumb';
+    thumb.src = getImageUrl(item);
+    thumb.alt = item.titolo || '';
+    thumb.loading = 'lazy';
+    thumb.onerror = () => { usePlaceholderImage(thumb); };
+
+    const body = document.createElement('div');
+
+    const title = document.createElement('div');
+    title.className = 'info-project-title';
+    title.textContent = formatText(item.titolo);
+
+    const meta = document.createElement('div');
+    meta.className = 'info-project-meta';
+    meta.textContent = formatText(item.autore);
+
+    const desc = document.createElement('div');
+    desc.className = 'info-project-desc';
+    desc.textContent = item.descrizione || '';
+
+    body.appendChild(title);
+    body.appendChild(meta);
+    body.appendChild(desc);
+
+    const tags = document.createElement('div');
+    tags.className = 'info-tags';
+    (item.tags || []).slice(0, 4).forEach((tag) => {
+      const tagEl = document.createElement('span');
+      tagEl.className = 'info-tag';
+      tagEl.textContent = formatText(tag);
+      tags.appendChild(tagEl);
+    });
+
+    card.appendChild(thumb);
+    card.appendChild(body);
+    card.appendChild(tags);
+    card.addEventListener('click', () => openModal(item));
+    infoFeaturedList.appendChild(card);
+  });
+
+  const uniqueTags = [...new Set(items.flatMap(item => (item.tags || []).map(cleanTag)))]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+
+  uniqueTags.slice(0, 12).forEach((tag) => {
+    const tagEl = document.createElement('span');
+    tagEl.className = 'info-tag';
+    tagEl.textContent = formatText(tag);
+    infoTagCloud.appendChild(tagEl);
+  });
 }
 
 function projectOrbitPoint(angle, radiusX = currentOrbitRadiusX, radiusY = currentOrbitRadiusY, tiltXDeg = currentTiltX, tiltZDeg = currentTiltZ, centerX = 0, centerY = 0) {
@@ -1569,14 +1942,49 @@ function closeModal() {
 
 document.getElementById('modal-close').addEventListener('click', closeModal);
 overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-document.addEventListener('click', (e) => {
-  if (e.target.closest('#modal-overlay')) return;
-  if (e.target.closest('#view-toggle')) return;
-  if (currentView === 'timeline') return;
-  if (Date.now() - lastTouchTime < 500) return;
-  toggleOrbitMode();
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (isInfoOpen()) {
+    setViewMode('tags');
+    return;
+  }
+  closeModal();
 });
+
+scene.addEventListener('pointerdown', (e) => {
+  if (
+    isModalOpen() ||
+    currentView === 'timeline' ||
+    e.button !== 0 ||
+    e.target.closest('.meteorite-inner')
+  ) return;
+  enableManualOrbit();
+  isDraggingOrbit = true;
+  dragStartY = e.clientY;
+  dragStartOrbit = orbitProgress;
+  if (scene.setPointerCapture) scene.setPointerCapture(e.pointerId);
+  hint.textContent = "release to stop the rotation";
+});
+
+scene.addEventListener('pointermove', (e) => {
+  if (!isDraggingOrbit || isModalOpen() || currentView === 'timeline') return;
+  const delta = dragStartY - e.clientY;
+  orbitProgress = dragStartOrbit + (delta * 0.02);
+  autoOrbitProgress = orbitProgress;
+});
+
+scene.addEventListener('pointerup', (e) => {
+  if (!isDraggingOrbit) return;
+  isDraggingOrbit = false;
+  if (scene.releasePointerCapture) scene.releasePointerCapture(e.pointerId);
+  hint.textContent = "drag the scene to rotate the orbit";
+});
+
+scene.addEventListener('pointercancel', () => {
+  isDraggingOrbit = false;
+  hint.textContent = "drag the scene to rotate the orbit";
+});
+
 document.addEventListener('wheel', (e) => {
   if (!manualControl || isModalOpen()) return;
   e.preventDefault();
@@ -1609,18 +2017,20 @@ function setOrbitTarget(config) {
   targetWaveFreq = config.waveFreq || 0;
 }
 
-function applyTagsFilter(tag = currentFilter) {
-  currentFilter = tag;
-  const targetTag = tag === 'all' ? null : normalizeTagKey(tag);
-  activeModalProjects = targetTag
-    ? modalProjects.filter(item => itemTagKeys(item).includes(targetTag))
-    : modalProjects;
+function matchesSelectedFilters(item) {
+  if (currentFilters.size === 0) return true;
+  const itemTags = itemTagKeys(item);
+  return [...currentFilters].some(tag => itemTags.includes(tag));
+}
+
+function applyTagsFilter() {
+  activeModalProjects = modalProjects.filter(matchesSelectedFilters);
   activeModalProjects = [...activeModalProjects].sort(compareProjectsAZ);
 
-  setOrbitTarget(getOrbitConfig(tag));
+  setOrbitTarget(getOrbitConfig());
 
   const visibleMeteorites = meteorites.filter(m => {
-    const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
+    const isVisible = matchesSelectedFilters(m.data);
     m.wrap.style.display = isVisible ? 'block' : 'none';
     return isVisible;
   }).sort((a, b) => compareProjectsAZ(a.data, b.data));
@@ -1633,35 +2043,52 @@ function applyTagsFilter(tag = currentFilter) {
 function applyTimelineLayout() {
   const config = getTimelineOrbitConfig();
   setOrbitTarget(config);
-  const targetTag = currentFilter === 'all' ? null : normalizeTagKey(currentFilter);
-  const visibleTimelineProjects = targetTag
-    ? timelineProjects.filter(item => itemTagKeys(item).includes(targetTag))
-    : timelineProjects;
+  const visibleTimelineProjects = timelineProjects.filter(matchesSelectedFilters);
   activeModalProjects = visibleTimelineProjects;
   meteorites.forEach((m) => {
-    const isVisible = !targetTag || itemTagKeys(m.data).includes(targetTag);
+    const isVisible = matchesSelectedFilters(m.data);
     m.wrap.style.display = isVisible ? 'block' : 'none';
     m.targetBaseAngle = getTimelineAngle(m.data);
   });
 }
 
 function setViewMode(view) {
-  currentView = view;
+  if (view === 'info') {
+    if (currentView === 'info') {
+      closeInfoPage();
+      currentView = 'tags';
+      applyTagsFilter();
+      view = 'tags';
+    } else {
+      currentView = 'info';
+      openInfoPage();
+    }
+  } else {
+    if (isInfoOpen()) closeInfoPage();
+    currentView = view;
+  }
+
+  document.body.classList.toggle('info-view', currentView === 'info');
   document.body.classList.toggle('timeline-view', currentView === 'timeline');
   document.querySelectorAll('.view-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === currentView);
   });
+
+  if (currentView === 'info') {
+    hint.textContent = "NASA70 project information";
+    return;
+  }
 
   if (currentView === 'timeline') {
     manualControl = false;
     orbitProgress = 0;
     autoOrbitProgress = 0;
     currentTimelineRotation = 0;
-    hint.textContent = "clicca ovunque, e trascina";
+    hint.textContent = "timeline active: use tags to narrow the archive";
     applyTimelineLayout();
   } else {
-    hint.textContent = "clicca ovunque, e trascina";
-    applyTagsFilter(currentFilter);
+    hint.textContent = "drag the scene to rotate the orbit";
+    applyTagsFilter();
   }
 }
 
@@ -1671,6 +2098,19 @@ document.querySelectorAll('.view-btn').forEach(btn => {
     setViewMode(btn.dataset.view);
   });
 });
+
+const themeToggle = document.getElementById('theme-toggle');
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isDarkTheme = document.body.classList.toggle('theme-dark');
+    themeToggle.setAttribute('aria-pressed', String(isDarkTheme));
+    const themeLabel = isDarkTheme ? 'Switch to light mode' : 'Switch to dark mode';
+    themeToggle.setAttribute('aria-label', themeLabel);
+    themeToggle.title = themeLabel;
+  });
+}
 
 window.addEventListener('resize', () => {
   if (currentView === 'timeline') applyTimelineLayout();
@@ -1918,8 +2358,8 @@ async function init() {
       loaderVideo.playbackRate = 3;
     }
     
-    // Initialize orbit parameters with 'all' config
-    const initialConfig = getOrbitConfig('all');
+    // Initialize orbit parameters with the main orbit configuration
+    const initialConfig = getOrbitConfig();
     targetOrbitRadiusX = currentOrbitRadiusX = initialConfig.orbitRadiusX;
     targetOrbitRadiusY = currentOrbitRadiusY = initialConfig.orbitRadiusY;
     targetTiltX = currentTiltX = initialConfig.tiltX;
@@ -1962,49 +2402,44 @@ async function init() {
       .filter(t => t.length > 0)
       .sort((a, b) => a.localeCompare(b));
 
+    const allFilterContainer = document.getElementById('filters-all');
     const filtersContainer = document.getElementById('filters-wrap');
-    const filtersToggleContainer = document.getElementById('filters-toggle');
-    let showAllTags = false;
-    const collapsedTagLimit = 7;
+    const minimumTagCount = 9;
     
     const renderFilters = () => {
+      allFilterContainer.innerHTML = '';
       filtersContainer.innerHTML = '';
-      filtersToggleContainer.innerHTML = '';
 
-      // Calcola i conteggi per tutti i tag unici
       const tagCounts = {};
       uniqueTags.forEach(tag => {
         const tagKey = normalizeTagKey(tag);
         tagCounts[tag] = data.filter(item => itemTagKeys(item).includes(tagKey)).length;
       });
 
-      // Filtra i tag: se non showAllTags, mostra solo quelli con almeno 2 occorrenze
-      let filteredTags = showAllTags 
-        ? uniqueTags 
-        : uniqueTags.filter(t => tagCounts[t] >= 2);
+      const visibleTags = uniqueTags
+        .filter(tag => tagCounts[tag] >= minimumTagCount)
+        .sort((a, b) => {
+          const countDiff = tagCounts[b] - tagCounts[a];
+          return countDiff !== 0 ? countDiff : a.localeCompare(b);
+        });
 
-      // Ordina i tag
-      filteredTags.sort((a, b) => {
-        const countDiff = tagCounts[b] - tagCounts[a];
-        return countDiff !== 0 ? countDiff : a.localeCompare(b);
-      });
-
-      const displayList = showAllTags
-        ? ['all', ...filteredTags]
-        : ['all', ...filteredTags.slice(0, collapsedTagLimit)];
-
-      displayList.forEach(tag => {
-        // Contatore progetti per tag (usando la logica di pulizia)
+      const createFilterButton = (tag) => {
         const count = tag === 'all' 
           ? data.length 
           : data.filter(item => itemTagKeys(item).includes(normalizeTagKey(tag))).length;
         const btn = document.createElement('button');
-        btn.className = 'filter-btn' + (tag === currentFilter ? ' active' : '');
+        btn.type = 'button';
+        const tagKey = tag === 'all' ? null : normalizeTagKey(tag);
+        const isActive = tag === 'all'
+          ? currentFilters.size === 0
+          : currentFilters.has(tagKey);
+        btn.className = 'filter-btn' + (isActive ? ' active' : '');
+        btn.setAttribute('aria-pressed', String(isActive));
         
-        const tagLabel = tag === 'all' ? 'NASA70' : formatText(tag);
+        const tagLabel = tag === 'all' ? 'All projects' : formatText(tag);
         const countEl = document.createElement('span');
         countEl.className = 'filter-count';
-        countEl.textContent = count;
+        countEl.textContent = `(${count})`;
 
         const labelEl = document.createElement('span');
         labelEl.className = 'filter-label';
@@ -2015,33 +2450,30 @@ async function init() {
         
         btn.onclick = (e) => {
           e.stopPropagation();
-          currentFilter = tag;
+          if (tag === 'all') {
+            currentFilters.clear();
+          } else if (currentFilters.has(tagKey)) {
+            currentFilters.delete(tagKey);
+          } else {
+            currentFilters.add(tagKey);
+          }
+
           if (currentView === 'timeline') {
             applyTimelineLayout();
           } else {
-            applyTagsFilter(tag);
+            applyTagsFilter();
           }
           renderFilters();
         };
-        filtersContainer.appendChild(btn);
-      });
+        return btn;
+      };
 
-      // Aggiunge il tasto per espandere/comprimere l'elenco
-      if (filteredTags.length > collapsedTagLimit) {
-        const moreBtn = document.createElement('button');
-        moreBtn.className = 'filter-btn filter-toggle';
-        moreBtn.style.opacity = '0.4';
-        moreBtn.textContent = showAllTags ? 'Mostra di meno' : 'Mostra di più';
-        moreBtn.onclick = (e) => {
-          e.stopPropagation();
-          showAllTags = !showAllTags;
-          renderFilters();
-        };
-        filtersToggleContainer.appendChild(moreBtn);
-      }
+      allFilterContainer.appendChild(createFilterButton('all'));
+      visibleTags.forEach(tag => filtersContainer.appendChild(createFilterButton(tag)));
     };
 
     renderFilters();
+    renderInfoPageHome(data);
 
     data.forEach((item, i) => {
       const baseAngle = (i / data.length) * Math.PI * 2;
@@ -2051,7 +2483,8 @@ async function init() {
       meteorites.push({ wrap, inner, title, author, baseAngle, targetBaseAngle: baseAngle, angle: baseAngle, speed, data: item });
     });
 
-    applyTagsFilter('all');
+    applyTagsFilter();
+    setViewMode('info');
 
     setTimeout(() => {
       loader.classList.add('hidden');
@@ -2062,7 +2495,7 @@ async function init() {
 
   } catch (err) {
     console.error(err);
-    loader.querySelector('.loader-text').textContent = 'Errore nel caricamento dei dati.';
+    loader.querySelector('.loader-text').textContent = 'Error loading project data.';
   }
 }
 
