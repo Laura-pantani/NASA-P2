@@ -464,7 +464,7 @@
     /* Home layout: the copy sits beside the typographic orbit. */
     body.info-view #info-page {
       overflow: hidden;
-      padding: clamp(76px, 9vh, 116px) var(--content-gutter) clamp(36px, 5vw, 64px);
+      padding: clamp(76px, 9vh, 116px) var(--content-gutter) clamp(36px, 5vw, 64px) var(--content-left-margin);
     }
 
     body.info-view .info-page-inner {
@@ -486,7 +486,7 @@
 
     body.info-view .info-main {
       position: absolute;
-      top: clamp(110px, 22vh, 255px);
+      top: clamp(94px, 20vh, 230px);
       left: 0;
       width: min(27vw, 360px);
       display: block;
@@ -507,7 +507,7 @@
     }
 
     body.info-view .home-projects-btn {
-      width: 100%;
+      width: fit-content;
       margin-top: 24px;
       padding: 15px 18px;
     }
@@ -2746,7 +2746,7 @@ function drawOrbitTrace() {
   oCtx.font = "100 34px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   oCtx.textBaseline = 'middle';
   oCtx.fillText(String(TIMELINE_YEAR), viewWidth / 2, 43);
-  oCtx.font = "100 12px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.font = "300 16px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   const timelineTodayLabel = TIMELINE_END_DATE.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long'
