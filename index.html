@@ -37,7 +37,7 @@
       pointer-events: none;
     }
 
-    body.info-view #starfield { opacity: 0.18; }
+    body.info-view #starfield { opacity: 0.58; }
 
     /* ---- SCENE ---- */
     #scene {
@@ -250,18 +250,148 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: scale(5.6);
+      transform: scale(1);
       transition: none;
     }
 
     /* ---- HOME / PROJECTS ORBIT TRANSITION ---- */
     body.transition-to-projects #scene {
       z-index: 2150;
-      opacity: 1;
+      opacity: 0;
       visibility: visible;
       pointer-events: none;
       transform: scale(1);
-      transition: filter 240ms ease, transform 900ms cubic-bezier(0.16, 1, 0.3, 1), opacity 900ms ease;
+      transition: filter 240ms ease, opacity 420ms ease;
+    }
+
+    body.transition-to-projects.project-scene-reveal #scene {
+      opacity: 1;
+    }
+
+    /* ---- HOME ORBIT TITLE ---- */
+    #home-orbit-title {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      margin: 0;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 260ms ease, visibility 0s linear 260ms;
+    }
+
+    body.info-view #home-orbit-title {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .home-orbit-letter,
+    .home-orbit-seventy {
+      position: absolute;
+      left: var(--orbit-x, 50%);
+      top: var(--orbit-y, 50%);
+      display: block;
+      color: #000;
+      font-size: clamp(54px, 7.2vmin, 112px);
+      font-weight: 600;
+      line-height: 0.82;
+      letter-spacing: -0.06em;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      will-change: opacity, transform, filter;
+    }
+
+    .home-orbit-seventy {
+      font-size: clamp(58px, 7.5vmin, 118px);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .home-orbit-seventy sup {
+      position: relative;
+      top: -0.48em;
+      margin-left: 0.22em;
+      font-size: 0.31em;
+      letter-spacing: -0.02em;
+    }
+
+    body.transition-to-projects #home-orbit-title {
+      z-index: 2200;
+      opacity: 0;
+      visibility: visible;
+      transition: opacity 220ms ease;
+    }
+
+    #home-project-stream {
+      position: fixed;
+      inset: 0;
+      z-index: 2190;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 180ms ease, visibility 0s linear 180ms;
+    }
+
+    body.transition-to-projects #home-project-stream {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .home-project-stream-card {
+      position: absolute;
+      left: var(--orbit-x, 50%);
+      top: var(--orbit-y, 50%);
+      width: 100px;
+      height: 63px;
+      padding: 4px;
+      overflow: hidden;
+      background: #ffffff33;
+      box-shadow: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.18);
+      will-change: opacity, transform;
+    }
+
+    .home-project-stream-card img {
+      display: block;
+      width: 100%;
+      height: 55px;
+      object-fit: cover;
+    }
+
+    body.transition-to-projects .home-project-stream-card {
+      animation: home-project-stream-in 260ms cubic-bezier(0.16, 1, 0.3, 1) var(--stream-delay) both;
+    }
+
+    @keyframes home-project-stream-in {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.18); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    #starfield,
+    #view-toggle,
+    #top-left-logo-wrap,
+    .theme-toggle,
+    #filters-container {
+      transition: opacity 420ms ease, transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.transition-to-projects #view-toggle,
+    body.transition-to-projects #top-left-logo-wrap,
+    body.transition-to-projects .theme-toggle,
+    body.transition-to-projects #filters-container {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    body.transition-to-projects #view-toggle,
+    body.transition-to-projects #top-left-logo-wrap,
+    body.transition-to-projects .theme-toggle,
+    body.transition-to-projects #filters-container {
+      transform: scale(0.72);
     }
 
     body.info-view.transition-to-projects #view-toggle,
@@ -275,7 +405,10 @@
 
     @media (prefers-reduced-motion: reduce) {
       #scene,
-      #info-page {
+      #info-page,
+      #home-orbit-title,
+      .home-orbit-letter,
+      .home-orbit-seventy {
         animation: none !important;
         transition-duration: 0ms !important;
       }
@@ -327,6 +460,57 @@
     }
 
     body.list-view #info-page { display: none; }
+
+    /* Home layout: the copy sits beside the typographic orbit. */
+    body.info-view #info-page {
+      overflow: hidden;
+      padding: clamp(76px, 9vh, 116px) var(--content-gutter) clamp(36px, 5vw, 64px);
+    }
+
+    body.info-view .info-page-inner {
+      position: relative;
+      width: 100%;
+      min-height: calc(100vh - clamp(112px, 14vh, 180px));
+      margin: 0;
+      display: block;
+    }
+
+    body.info-view .info-topline,
+    body.info-view .info-main > section {
+      display: none;
+    }
+
+    body.info-view .info-shell {
+      display: block;
+    }
+
+    body.info-view .info-main {
+      position: absolute;
+      top: clamp(110px, 22vh, 255px);
+      left: 0;
+      width: min(27vw, 360px);
+      display: block;
+      transform: none;
+    }
+
+    body.info-view .info-lead {
+      max-width: 39ch;
+      font-size: clamp(14px, 1.05vw, 18px);
+      line-height: 1.55;
+    }
+
+    body.info-view .info-subtitle {
+      max-width: 40ch;
+      margin-top: 16px;
+      font-size: clamp(12px, 0.9vw, 15px);
+      line-height: 1.55;
+    }
+
+    body.info-view .home-projects-btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 15px 18px;
+    }
 
     .info-page-inner {
       width: min(1320px, 100%);
@@ -570,6 +754,21 @@
     }
 
     @media (max-width: 900px) {
+      body.info-view #info-page {
+        overflow-y: auto;
+      }
+
+      body.info-view .info-page-inner {
+        min-height: auto;
+      }
+
+      body.info-view .info-main {
+        position: relative;
+        top: auto;
+        width: min(100%, 440px);
+        padding-top: min(70vw, 460px);
+      }
+
       .info-grid {
         grid-template-columns: 1fr;
       }
@@ -585,6 +784,21 @@
 
       .info-project-aside {
         grid-column: 2;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .home-orbit-letter {
+        font-size: clamp(32px, 8.4vmin, 52px);
+      }
+
+      .home-orbit-seventy {
+        font-size: clamp(40px, 10.8vmin, 68px);
+      }
+
+      body.info-view .info-main {
+        width: 100%;
+        padding-top: min(88vw, 440px);
       }
     }
 
@@ -1145,6 +1359,27 @@
   <div id="orbit-root"></div>
 </div>
 
+<h1 id="home-orbit-title" aria-label="NASA's 70th anniversary">
+  <span class="home-orbit-letter" data-home-orbit-angle="3.15" style="--exit-delay: 0ms;">N</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="2.76" style="--exit-delay: 25ms;">A</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="2.37" style="--exit-delay: 50ms;">S</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="1.98" style="--exit-delay: 75ms;">A</span>
+  <span class="home-orbit-seventy" data-home-orbit-angle="1.34" style="--exit-delay: 110ms;">70<sup>th</sup></span>
+  <span class="home-orbit-letter" data-home-orbit-angle="0.80" style="--exit-delay: 135ms;">a</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="0.49" style="--exit-delay: 160ms;">n</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="0.18" style="--exit-delay: 185ms;">n</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-0.13" style="--exit-delay: 210ms;">i</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-0.44" style="--exit-delay: 235ms;">v</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-0.75" style="--exit-delay: 260ms;">e</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-1.06" style="--exit-delay: 285ms;">r</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-1.37" style="--exit-delay: 310ms;">s</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-1.68" style="--exit-delay: 335ms;">a</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-1.99" style="--exit-delay: 360ms;">r</span>
+  <span class="home-orbit-letter" data-home-orbit-angle="-2.30" style="--exit-delay: 385ms;">y</span>
+</h1>
+
+<div id="home-project-stream" aria-hidden="true"></div>
+
 <!-- FILTERS -->
 <div id="filters-container">
   <div id="project-view-controls" role="group" aria-label="Project view">
@@ -1185,7 +1420,6 @@
     <div class="info-shell">
       <div class="info-main">
         <div>
-          <div class="info-title">NASA’s 70<sup>th</sup> anniversary.</div>
           <p class="info-lead">
             These projects were created for NASA’s 2028 anniversary year.
             NASA70 brings them together in a project archive that explores missions and stories from NASA’s history. This site offers a way to discover NASA’s contribution to space and the planet more deeply,
@@ -1342,6 +1576,34 @@ function usePlaceholderImage(imgEl) {
   }
 }
 
+function renderHomeProjectStream(items) {
+  if (!homeProjectStream) return;
+
+  homeProjectStream.innerHTML = '';
+  const streamStep = (Math.PI * 2) / Math.max(items.length, 1);
+  const streamStagger = items.length > 1
+    ? Math.min(55, 2000 / (items.length - 1))
+    : 0;
+  homeProjectStreamDuration = 150 + (items.length - 1) * streamStagger + 260;
+
+  homeProjectStreamCards = items.map((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'home-project-stream-card';
+    // Start after the final title letter ("y") and complete one full ellipse.
+    card.dataset.projectStreamAngle = String(-2.30 - (index + 1) * streamStep);
+    card.style.setProperty('--stream-delay', `${150 + index * streamStagger}ms`);
+
+    const image = document.createElement('img');
+    image.src = getImageUrl(item);
+    image.alt = '';
+    image.onerror = () => usePlaceholderImage(image);
+
+    card.appendChild(image);
+    homeProjectStream.appendChild(card);
+    return card;
+  });
+}
+
 const scene = document.getElementById('scene');
 const orbitRoot = document.getElementById('orbit-root');
 const orbitCanvas = document.getElementById('orbit-canvas');
@@ -1354,6 +1616,13 @@ const infoTagCloud = document.getElementById('info-tag-cloud');
 const projectList = document.getElementById('project-list');
 const projectListPanel = document.getElementById('project-list-panel');
 const homeProjectsButton = document.getElementById('home-projects-btn');
+const homeOrbitTitle = document.getElementById('home-orbit-title');
+const homeOrbitLetters = homeOrbitTitle
+  ? [...homeOrbitTitle.querySelectorAll('[data-home-orbit-angle]')]
+  : [];
+const homeProjectStream = document.getElementById('home-project-stream');
+let homeProjectStreamCards = [];
+let homeProjectStreamDuration = 1180;
 const modalImage = document.getElementById('modal-img');
 let isViewTransitioning = false;
 modalImage.onerror = () => { usePlaceholderImage(modalImage); };
@@ -1384,21 +1653,24 @@ function transitionMainView(view) {
     return;
   }
 
+  const isProjectStream = view === 'tags';
   isViewTransitioning = true;
   document.body.classList.toggle('transition-to-info', view === 'info');
-  document.body.classList.toggle('transition-to-projects', view === 'tags');
+  document.body.classList.toggle('transition-to-projects', isProjectStream);
 
-  // Keep the real orbit above Home while the page scales away.
+  // Let the project stream finish before showing the complete project orbit.
   window.setTimeout(() => {
     setViewMode(view);
-  }, view === 'tags' ? 540 : 170);
+    if (isProjectStream) document.body.classList.add('project-scene-reveal');
+  }, isProjectStream ? homeProjectStreamDuration : 170);
   window.setTimeout(() => {
     document.body.classList.remove(
       'transition-to-info',
-      'transition-to-projects'
+      'transition-to-projects',
+      'project-scene-reveal'
     );
     isViewTransitioning = false;
-  }, view === 'tags' ? 960 : 760);
+  }, isProjectStream ? homeProjectStreamDuration + 440 : 760);
 }
 
 function resizeOrbitCanvas() {
@@ -1963,6 +2235,37 @@ function projectOrbitPoint(angle, radiusX = currentOrbitRadiusX, radiusY = curre
   };
 }
 
+function updateHomeOrbitTitle() {
+  const orbitElements = [...homeOrbitLetters, ...homeProjectStreamCards];
+  if (!orbitElements.length) return;
+
+  const isVisible = isInfoOpen() || document.body.classList.contains('transition-to-projects');
+  if (!isVisible) return;
+
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+  // Keep the Home title and the project stream locked to the Projects orbit.
+  const rotation = orbitProgress * 0.08;
+
+  orbitElements.forEach((element) => {
+    const baseAngle = Number(element.dataset.homeOrbitAngle || element.dataset.projectStreamAngle);
+    const angle = baseAngle + rotation;
+    const wave = Math.sin(angle * currentWaveFreq) * currentWaveAmp;
+    const point = projectOrbitPoint(
+      angle,
+      currentOrbitRadiusX + wave,
+      currentOrbitRadiusY + wave,
+      currentTiltX,
+      currentTiltZ,
+      centerX,
+      centerY
+    );
+
+    element.style.setProperty('--orbit-x', `${point.x}px`);
+    element.style.setProperty('--orbit-y', `${point.y}px`);
+  });
+}
+
 function buildMeteoriteEl(item, img) {
   const wrap = document.createElement('div');
   wrap.className = 'meteorite';
@@ -2472,7 +2775,7 @@ function animate(ts) {
     currentHoverSlowdown += (targetSlowdown - currentHoverSlowdown) * 0.1;
 
     if (!manualControl && currentView !== 'timeline') {
-      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier * currentHoverSlowdown;
+      autoOrbitProgress -= deltaSeconds * currentOrbitSpeedMultiplier * currentHoverSlowdown;
       orbitProgress = autoOrbitProgress;
     }
     if (currentView === 'timeline') {
@@ -2480,6 +2783,7 @@ function animate(ts) {
       currentTimelineRotation = 0;
     }
 
+    updateHomeOrbitTitle();
     drawOrbitTrace();
 
     meteorites.forEach(m => {
@@ -2647,6 +2951,8 @@ async function init() {
     renderFilters();
     renderInfoPageHome(listProjects);
     renderProjectList(listProjects);
+    // The transition uses the exact same 100 cards as the Projects orbit.
+    renderHomeProjectStream(data);
 
     data.forEach((item, i) => {
       const baseAngle = (i / data.length) * Math.PI * 2;
