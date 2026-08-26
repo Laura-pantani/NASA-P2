@@ -17,7 +17,11 @@
       --content-gutter: clamp(22px, 3.5vw, 60px);
       --content-left-margin: max(var(--content-gutter), calc(50vw - 660px));
       --logo-width: clamp(150px, 11vw, 230px);
-      --logo-right-margin: max(12px, calc(var(--content-left-margin) - 12px));
+      --header-top: clamp(15px, 2vw, 40px);
+      --header-right: max(12px, calc(var(--content-gutter) - 12px));
+      --theme-toggle-size: 24px;
+      --header-control-gap: clamp(10px, 1.25vw, 18px);
+      --home-panel-lift: clamp(78px, 9vh, 108px);
     }
 
     html, body {
@@ -59,8 +63,8 @@
 
     #top-left-logo-wrap {
       position: fixed;
-      top: clamp(15px, 2vw, 40px);
-      right: var(--logo-right-margin);
+      top: var(--header-top);
+      right: calc(var(--header-right) + var(--theme-toggle-size) + var(--header-control-gap));
       width: var(--logo-width);
       aspect-ratio: 1030 / 319;
       z-index: 1200;
@@ -81,7 +85,7 @@
     }
 
     #top-left-logo-static,
-    #top-left-logo-animated {
+    #top-left-logo-wrap #top-left-logo-animated {
       position: absolute;
       inset: 0;
       transition: opacity 180ms ease;
@@ -91,15 +95,15 @@
       opacity: 1;
     }
 
-    #top-left-logo-animated {
+    #top-left-logo-wrap #top-left-logo-animated {
       opacity: 0;
       pointer-events: none;
       inset: auto;
-      top: 9px;
-      left: 50%;
-      width: 100%;
+      top: 10px;
+      right: 4px;
+      width: 93%;
       height: auto;
-      transform: translateX(-49%);
+      transform: none;
     }
 
     #top-left-logo-wrap.is-animated #top-left-logo-static {
@@ -127,7 +131,7 @@
       color: #000;
       font-family: var(--font-main);
       font-size: clamp(13px, 0.95vw, 18px);
-      font-weight: 300;
+      font-weight: 400;
       letter-spacing: 0.03em;
       line-height: 1.2;
       padding: 0 0 5px;
@@ -140,8 +144,8 @@
 
     .theme-toggle {
       position: fixed;
-      right: calc(var(--content-gutter) - 16px);
-      top: calc(clamp(15px, 3vw, 40px) + 3px);
+      right: var(--header-right);
+      top: calc(var(--header-top) + 12px);
       z-index: 1300;
       width: 24px;
       height: 26px;
@@ -190,7 +194,7 @@
 
     .view-btn:hover,
     .view-btn.active {
-      font-weight: 300;
+      font-weight: 500;
       text-shadow: 0 0 0.25px currentColor;
     }
 
@@ -228,7 +232,18 @@
     }
 
     body.theme-dark.info-view::before {
-      background: linear-gradient(to bottom, #000 0%, #000 58%, rgba(0, 0, 0, 0) 100%);
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 58%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    /* Keep the same dark header treatment when the project views are active. */
+    body.theme-dark:not(.info-view)::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: clamp(88px, 11vw, 128px);
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 58%, rgba(0, 0, 0, 0) 100%);
+      pointer-events: none;
+      z-index: 1000;
     }
 
     body.info-view::before {
@@ -486,7 +501,7 @@
 
     body.info-view .info-main {
       position: absolute;
-      top: clamp(94px, 20vh, 230px);
+      top: calc(clamp(94px, 20vh, 230px) - var(--home-panel-lift));
       left: 0;
       width: min(27vw, 360px);
       display: block;
@@ -788,6 +803,12 @@
     }
 
     @media (max-width: 560px) {
+      :root {
+        --logo-width: clamp(96px, 28vw, 128px);
+        --header-top: 14px;
+        --header-control-gap: 9px;
+      }
+
       .home-orbit-letter {
         font-size: clamp(38px, 9.5vmin, 60px);
       }
@@ -1220,22 +1241,15 @@
     #filters-container {
       position: fixed;
       left: var(--content-left-margin);
-      top: clamp(250px, 27vh, 360px);
+      top: calc(clamp(250px, 27vh, 360px) - var(--home-panel-lift));
       z-index: 1100;
       isolation: isolate;
       display: flex;
       flex-direction: column;
-      gap: clamp(10px, 0.9vw, 18px);
+      width: clamp(190px, 16vw, 250px);
+      max-width: calc(100vw - (2 * var(--content-gutter)));
+      gap: 18px;
       bottom: 28px;
-    }
-
-    #filters-container::before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: -100px -80px -40px -40px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.58) 68%, rgba(255,255,255,0) 100%);
-      pointer-events: none;
     }
 
     #filters-all {
@@ -1246,8 +1260,7 @@
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      gap: clamp(10px, 0.9vw, 18px);
-      transform: translateY(-80px);
+      gap: 5px;
     }
 
     #tag-filter-section {
@@ -1255,12 +1268,18 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: clamp(10px, 0.9vw, 18px);
-      transform: translateY(-60px);
+      gap: 10px;
+      padding: 12px 0 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.26);
     }
 
     .project-view-btn {
       grid-template-columns: max-content;
+      width: fit-content;
+      min-width: 112px;
+      max-width: 100%;
+      padding: 7px 8px;
+      border-left: 2px solid transparent;
     }
 
     .project-view-btn .filter-count {
@@ -1276,12 +1295,19 @@
       color: rgba(0, 0, 0, 0.54);
     }
 
+    .filter-section-hint {
+      margin: 3px 0 8px;
+      font-size: 10px;
+      line-height: 1.35;
+      color: rgba(0, 0, 0, 0.58);
+    }
+
     #filters-wrap {
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: clamp(10px, 0.9vw, 18px);
+      gap: 8px;
       border-left: none;
       padding: 0;
       overflow-y: auto;
@@ -1296,7 +1322,7 @@
       color: #000000;
       font-family: var(--font-main);
       font-size: clamp(13px, 0.95vw, 18px);
-      font-weight: 100;
+      font-weight: 400;
       line-height: 1.35;
       display: grid;
       grid-template-columns: 3ch max-content;
@@ -1323,6 +1349,24 @@
       color: var(--primary); 
       opacity: 1; 
       font-weight: 700;
+    }
+
+    /* View changes the layout, so it behaves as a single, high-contrast selection. */
+    .project-view-btn.active {
+      background: #000;
+      border-left-color: #000;
+      color: #fff;
+    }
+
+    /* Tags can be combined without changing the alignment of their labels. */
+    #tag-filter-section .filter-btn {
+      padding: 2px 0;
+    }
+
+    @media (max-width: 560px) {
+      #filters-container {
+        width: min(210px, calc(100vw - (2 * var(--content-gutter))));
+      }
     }
 
   </style>
@@ -1384,6 +1428,7 @@
 <div id="filters-container">
   <div id="project-view-controls" role="group" aria-label="Project view">
     <div class="filter-section-label">View</div>
+    <p class="filter-section-hint">Choose one layout</p>
     <button class="filter-btn project-view-btn active" type="button" data-project-view="tags" aria-pressed="true">
       <span class="filter-count" aria-hidden="true"></span>
       <span class="filter-label">Orbit</span>
@@ -1397,8 +1442,9 @@
       <span class="filter-label">List</span>
     </button>
   </div>
-  <div id="tag-filter-section">
+  <div id="tag-filter-section" role="group" aria-label="Filter projects by tag">
     <div class="filter-section-label">Tags</div>
+    <p class="filter-section-hint">Combine one or more filters</p>
     <div id="filters-all"></div>
     <div id="filters-wrap"></div>
   </div>
@@ -1732,6 +1778,8 @@ let targetWaveFreq = 0;
 let isDraggingOrbit = false;
 let dragStartY = 0;
 let dragStartOrbit = 0;
+let didDragOrbit = false;
+let ignoreNextSceneClick = false;
 
 
 // We'll spread meteorites evenly around the ring
@@ -2385,6 +2433,7 @@ scene.addEventListener('pointerdown', (e) => {
   ) return;
   enableManualOrbit();
   isDraggingOrbit = true;
+  didDragOrbit = false;
   dragStartY = e.clientY;
   dragStartOrbit = orbitProgress;
   if (scene.setPointerCapture) scene.setPointerCapture(e.pointerId);
@@ -2394,12 +2443,14 @@ scene.addEventListener('pointerdown', (e) => {
 scene.addEventListener('pointermove', (e) => {
   if (!isDraggingOrbit || isModalOpen() || currentView === 'timeline') return;
   const delta = dragStartY - e.clientY;
+  if (Math.abs(delta) > 4) didDragOrbit = true;
   orbitProgress = dragStartOrbit + (delta * 0.02);
   autoOrbitProgress = orbitProgress;
 });
 
 scene.addEventListener('pointerup', (e) => {
   if (!isDraggingOrbit) return;
+  ignoreNextSceneClick = didDragOrbit;
   isDraggingOrbit = false;
   if (scene.releasePointerCapture) scene.releasePointerCapture(e.pointerId);
   hint.textContent = "drag the scene to rotate the orbit";
@@ -2407,6 +2458,26 @@ scene.addEventListener('pointerup', (e) => {
 
 scene.addEventListener('pointercancel', () => {
   isDraggingOrbit = false;
+  didDragOrbit = false;
+  hint.textContent = "drag the scene to rotate the orbit";
+});
+
+scene.addEventListener('click', (e) => {
+  if (ignoreNextSceneClick) {
+    ignoreNextSceneClick = false;
+    return;
+  }
+
+  if (
+    isModalOpen() ||
+    currentView === 'timeline' ||
+    currentView === 'list' ||
+    e.target.closest('.meteorite-inner') ||
+    !manualControl
+  ) return;
+
+  autoOrbitProgress = orbitProgress;
+  manualControl = false;
   hint.textContent = "drag the scene to rotate the orbit";
 });
 
@@ -2878,7 +2949,7 @@ async function init() {
 
     const allFilterContainer = document.getElementById('filters-all');
     const filtersContainer = document.getElementById('filters-wrap');
-    const minimumTagCount = 9;
+    const minimumTagCount = 1;
     
     const renderFilters = () => {
       allFilterContainer.innerHTML = '';
@@ -2913,7 +2984,7 @@ async function init() {
         const tagLabel = tag === 'all' ? 'All projects' : formatText(tag);
         const countEl = document.createElement('span');
         countEl.className = 'filter-count';
-        countEl.textContent = `(${count})`;
+        countEl.textContent = count;
 
         const labelEl = document.createElement('span');
         labelEl.className = 'filter-label';
