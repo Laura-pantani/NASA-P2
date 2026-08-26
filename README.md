@@ -107,3 +107,14 @@ Lo schizzo 04 è stato usato come riferimento per la composizione della Home pag
 ![Schizzo 04 - Riferimento Home page](p2/schizzo_04.jpeg)
 
 *Studio della Home page: titolo disposto sull'orbita, contenuto informativo laterale e passaggio verso i progetti.*
+
+### Screenshot della correzione
+
+![Vista Orbit e filtri](p2/screen_01.png)
+*Vista Orbit: sidebar con modalità di visualizzazione e tag filtrabili.*
+
+![Vista Timeline](p2/screen_03.png)
+*Vista Timeline: progetti ordinati nello stesso intervallo temporale dell'orbita.*
+
+![Card progetto aperta](p2/screen_02.png)
+*Card aperta: dettaglio del progetto con la seconda immagine fornita dall'API.*
