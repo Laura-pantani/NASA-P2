@@ -111,6 +111,7 @@ Lo schizzo 04 è stato usato come riferimento per la composizione della Home pag
 ### Screenshot della correzione
 
 ![homepage](p2/Screenshot_01.png)
+*home page: titolo orbitale con descrizione del progetto NASA 70.* 
 
 ![Vista orbitale](p2/Screenshot_02.png)
 *Vista Orbit: sidebar con modalità di visualizzazione e tag filtrabili.*
@@ -120,3 +121,4 @@ Lo schizzo 04 è stato usato come riferimento per la composizione della Home pag
 
 
 ![vista lista](p2/Screenshot_04.png)
+*Vista lista: progetti ad elenco con descrizioni e info sui progetti.*
