@@ -88,3 +88,22 @@ Per l'animazione, invece, ho pensato a una sorta di countdown al contrario, ovve
 ## Target
 Il progetto è pensato principalmente per studenti, docenti e visitatori interessati a scoprire i lavori realizzati per NASA70. Il target include persone che vogliono esplorare i progetti in modo rapido, ma anche utenti curiosi che preferiscono un'esperienza più immersiva e visiva rispetto a un archivio tradizionale.
 L'obiettivo è rendere la consultazione accessibile, ma allo stesso tempo coerente con l'immaginario NASA: orbite, movimento, profondità e navigazione nello spazio diventano il linguaggio con cui raccontare i progetti.
+
+## Progetto 2 — Correzione e sviluppo di NASA70
+Il secondo progetto riprende NASA70 come una fase di correzione e affinamento. L'obiettivo è stato rendere più chiara la lettura dell'interfaccia, mantenendo l'idea iniziale dell'archivio orbitale e rendendo più coerenti Home page, Projects e Timeline.
+
+### Motivazioni dei cambiamenti
+
+- **Gerarchia della navigazione:** Home page e Projects sono stati resi più riconoscibili nell'header. Il logo e il controllo del tema restano allineati in alto a destra anche su schermi piccoli.
+- **Distinzione tra View e Tags:** le modalità di visualizzazione sono una scelta singola, mentre i tag sono filtri combinabili. Le due funzioni hanno ora didascalie, stati attivi e gerarchie visive differenti.
+- **Coerenza dei dati:** orbita, tag e Timeline mostrano lo stesso intervallo di progetti, dal 1° gennaio alla data corrente della Timeline. Per questo anche i conteggi dei tag vengono aggiornati sullo stesso insieme di progetti.
+- **Dettaglio dei progetti:** nelle card aperte viene caricata la seconda immagine disponibile nell'API, così il modal aggiunge informazioni visive rispetto alla miniatura dell'orbita.
+- **Movimento e continuità:** il verso dell'orbita e della transizione tra Home e Projects è stato uniformato. Dopo il drag, un click sullo sfondo riattiva la rotazione automatica.
+
+### Schizzo di riferimento per la Home page
+
+Lo schizzo 04 è stato usato come riferimento per la composizione della Home page: il testo NASA70 segue una traiettoria orbitale centrale, mentre il testo descrittivo e i controlli restano ai lati per mantenere una lettura chiara.
+
+![Schizzo 04 - Riferimento Home page](p2/schizzo_04.jpeg)
+
+*Studio della Home page: titolo disposto sull'orbita, contenuto informativo laterale e passaggio verso i progetti.*
