@@ -22,6 +22,7 @@
       --theme-toggle-size: 24px;
       --header-control-gap: clamp(10px, 1.25vw, 18px);
       --home-panel-lift: clamp(78px, 9vh, 108px);
+      --home-copy-drop: clamp(36px, 4vh, 56px);
     }
 
     html, body {
@@ -501,7 +502,7 @@
 
     body.info-view .info-main {
       position: absolute;
-      top: calc(clamp(94px, 20vh, 230px) - var(--home-panel-lift));
+      top: calc(clamp(94px, 20vh, 230px) - var(--home-panel-lift) + var(--home-copy-drop));
       left: 0;
       width: min(27vw, 360px);
       display: block;
@@ -871,7 +872,7 @@
 
     .met-title {
       font-family: var(--font-main);
-      font-weight: 700;
+      font-weight: 400;
       margin-top: 4px;
       font-size: 9px;
       color: #000;
@@ -885,7 +886,7 @@
 
     .met-author {
       font-family: var(--font-main);
-      font-weight: 100;
+      font-weight: 400;
       font-size: 8px;
       color: #000;
       margin-top: 2px;
@@ -898,7 +899,7 @@
     .met-date {
       display: none;
       font-family: var(--font-main);
-      font-weight: 100;
+      font-weight: 400;
       font-size: 8px;
       color: #555;
       margin-top: 3px;
@@ -1144,6 +1145,15 @@
       border-bottom-color: rgba(255,255,255,0.42);
     }
 
+    #modal-kicker,
+    #modal-title,
+    #modal-author,
+    #modal-date,
+    #modal-desc,
+    #modal-tags .info-tag {
+      font-weight: 400;
+    }
+
     #modal-actions {
       display: flex;
       gap: 12px;
@@ -1287,17 +1297,17 @@
     }
 
     .filter-section-label {
-      font-size: 9px;
-      font-weight: 400;
+      font-size: 11px;
+      font-weight: 500;
       letter-spacing: 0.16em;
       line-height: 1;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.54);
+      color: rgba(0, 0, 0, 0.78);
     }
 
     .filter-section-hint {
       margin: 3px 0 8px;
-      font-size: 10px;
+      font-size: 12px;
       line-height: 1.35;
       color: rgba(0, 0, 0, 0.58);
     }
@@ -1337,6 +1347,7 @@
     .filter-count {
       text-align: right;
       font-variant-numeric: tabular-nums;
+      font-weight: 100;
       opacity: 0.62;
     }
 
@@ -1586,9 +1597,9 @@ const IMAGE_URL = "https://raw.githubusercontent.com/ixd-supsi/n70api/main/immag
 const PLACEHOLDER_IMAGE = `${IMAGE_URL}projectmoonbound_1.jpg`;
 
 // ---- GET IMAGE FILE ----
-function getImageFile(item) {
-  // prova tutti i possibili campi
-  let file =
+function getImageFile(item, imageIndex = 0) {
+  const isSecondImage = imageIndex === 1;
+  const primaryImage =
     item.immagine_1 ||
     item.immagine1 ||
     item.image ||
@@ -1596,6 +1607,17 @@ function getImageFile(item) {
     item.thumbnail ||
     (Array.isArray(item.immagine) ? item.immagine[0] : item.immagine) ||
     (Array.isArray(item.immagini) ? item.immagini[0] : item.immagini);
+
+  // The API supplies image pairs in `immagine`; use the first image as a fallback.
+  let file = isSecondImage
+    ? item.immagine_2 ||
+      item.immagine2 ||
+      item.image_2 ||
+      item.image2 ||
+      (Array.isArray(item.immagine) ? item.immagine[1] : null) ||
+      (Array.isArray(item.immagini) ? item.immagini[1] : null) ||
+      primaryImage
+    : primaryImage;
 
   // se non esiste ritorna null
   if (!file) {
@@ -1609,8 +1631,8 @@ function getImageFile(item) {
   return file;
 }
 
-function getImageUrl(item) {
-  const file = getImageFile(item);
+function getImageUrl(item, imageIndex = 0) {
+  const file = getImageFile(item, imageIndex);
   if (!file || file.includes("...")) return PLACEHOLDER_IMAGE;
   if (/^https?:\/\//i.test(file)) return file;
   return IMAGE_URL + file.split('/').map(encodeURIComponent).join('/');
@@ -1635,8 +1657,8 @@ function renderHomeProjectStream(items) {
   homeProjectStreamCards = items.map((item, index) => {
     const card = document.createElement('div');
     card.className = 'home-project-stream-card';
-    // Start after the final title letter ("y") and complete one full ellipse.
-    card.dataset.projectStreamAngle = String(-2.30 - (index + 1) * streamStep);
+    // Start after the final title letter ("y") and complete one full ellipse in the reversed direction.
+    card.dataset.projectStreamAngle = String(-2.30 + (index + 1) * streamStep);
     card.style.setProperty('--stream-delay', `${150 + index * streamStagger}ms`);
 
     const image = document.createElement('img');
@@ -2382,7 +2404,7 @@ function openModal(item) {
   if (currentView === 'list') applyTagsFilter();
   paused = true;
   isHoveringCard = false;
-  const imagePath = getImageUrl(item);
+  const imagePath = getImageUrl(item, 1);
   
   modalImage.src = imagePath;
   modalImage.alt = item.titolo;
@@ -2523,7 +2545,7 @@ function applyTagsFilter() {
   setOrbitTarget(getOrbitConfig());
 
   const visibleMeteorites = meteorites.filter(m => {
-    const isVisible = matchesSelectedFilters(m.data);
+    const isVisible = isInTimelineDateRange(m.data) && matchesSelectedFilters(m.data);
     m.wrap.style.display = isVisible ? 'block' : 'none';
     return isVisible;
   }).sort((a, b) => compareProjectsAZ(a.data, b.data));
@@ -2772,7 +2794,7 @@ function drawOrbitTrace() {
     { label: '3 January', point: apsidesPoints[1] }
   ].filter(item => item.point);
 
-  oCtx.font = "100 13px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.font = "400 13px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   oCtx.fillStyle = 'rgba(0,0,0,0.76)';
 
   dateLabels.forEach((item) => {
@@ -2814,10 +2836,11 @@ function drawOrbitTrace() {
   oCtx.font = "100 11px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   oCtx.fillStyle = 'rgba(0,0,0,0.55)';
   oCtx.fillText('Sun', centerX, centerY + 30);
-  oCtx.font = "100 34px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.fillStyle = 'rgba(0,0,0,0.92)';
+  oCtx.font = "400 34px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   oCtx.textBaseline = 'middle';
   oCtx.fillText(String(TIMELINE_YEAR), viewWidth / 2, 43);
-  oCtx.font = "300 16px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+  oCtx.font = "400 16px 'Helvetica Neue Pro', 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif";
   const timelineTodayLabel = TIMELINE_END_DATE.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long'
@@ -2846,7 +2869,7 @@ function animate(ts) {
     currentHoverSlowdown += (targetSlowdown - currentHoverSlowdown) * 0.1;
 
     if (!manualControl && currentView !== 'timeline') {
-      autoOrbitProgress -= deltaSeconds * currentOrbitSpeedMultiplier * currentHoverSlowdown;
+      autoOrbitProgress += deltaSeconds * currentOrbitSpeedMultiplier * currentHoverSlowdown;
       orbitProgress = autoOrbitProgress;
     }
     if (currentView === 'timeline') {
@@ -2939,11 +2962,12 @@ async function init() {
         _timelineLabel: formatTimelineDate(timelineDate)
       };
     }).sort((a, b) => a._timelineDate - b._timelineDate);
-    modalProjects = data;
+    const timelineProjects = data.filter(isInTimelineDateRange);
+    modalProjects = timelineProjects;
     listProjects = data.filter(item => item._timelineIndex < rawData.length);
     loaderBar.style.width = '100%';
 
-    const uniqueTags = [...new Set(data.flatMap(item => (item.tags || []).map(cleanTag)))]
+    const uniqueTags = [...new Set(timelineProjects.flatMap(item => (item.tags || []).map(cleanTag)))]
       .filter(t => t.length > 0)
       .sort((a, b) => a.localeCompare(b));
 
@@ -2958,7 +2982,7 @@ async function init() {
       const tagCounts = {};
       uniqueTags.forEach(tag => {
         const tagKey = normalizeTagKey(tag);
-        tagCounts[tag] = data.filter(item => itemTagKeys(item).includes(tagKey)).length;
+        tagCounts[tag] = timelineProjects.filter(item => itemTagKeys(item).includes(tagKey)).length;
       });
 
       const visibleTags = uniqueTags
@@ -2969,9 +2993,9 @@ async function init() {
         });
 
       const createFilterButton = (tag) => {
-        const count = tag === 'all' 
-          ? data.length 
-          : data.filter(item => itemTagKeys(item).includes(normalizeTagKey(tag))).length;
+        const count = tag === 'all'
+          ? timelineProjects.length
+          : timelineProjects.filter(item => itemTagKeys(item).includes(normalizeTagKey(tag))).length;
         const btn = document.createElement('button');
         btn.type = 'button';
         const tagKey = tag === 'all' ? null : normalizeTagKey(tag);
@@ -3022,8 +3046,8 @@ async function init() {
     renderFilters();
     renderInfoPageHome(listProjects);
     renderProjectList(listProjects);
-    // The transition uses the exact same 100 cards as the Projects orbit.
-    renderHomeProjectStream(data);
+    // The transition uses the same date range as the Projects orbit and Timeline.
+    renderHomeProjectStream(timelineProjects);
 
     data.forEach((item, i) => {
       const baseAngle = (i / data.length) * Math.PI * 2;
