@@ -111,12 +111,12 @@ Lo schizzo 04 è stato usato come riferimento per la composizione della Home pag
 ### Screenshot della correzione
 
 ![homepage](p2/Screenshot_01.png)
-*Vista Orbit: sidebar con modalità di visualizzazione e tag filtrabili.*
 
 ![Vista orbitale](p2/Screenshot_02.png)
-*Vista Timeline: progetti ordinati nello stesso intervallo temporale dell'orbita.*
+*Vista Orbit: sidebar con modalità di visualizzazione e tag filtrabili.*
 
 ![vista timeline](p2/Screenshot_03.png)
-*Card aperta: dettaglio del progetto con la seconda immagine fornita dall'API.*
+*Vista Timeline: progetti ordinati nello stesso intervallo temporale dell'orbita.*
+
 
 ![vista lista](p2/Screenshot_04.png)
